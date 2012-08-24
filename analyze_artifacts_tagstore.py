@@ -112,10 +112,10 @@ def guess_tp_number(string):
     digits = re.sub("\D", "", string)
 
     if not digits:
-        error_exit(3, "ERROR: filename \"" + string + \
-                       "\" contains no digit which " + \
-                       "could lead to a TP number.\n" + \
-                       "Please keep TP numbers in file names.")
+        error_exit(3, "ERROR: filename \"" + string +
+                   "\" contains no digit which " +
+                   "could lead to a TP number.\n" +
+                   "Please keep TP numbers in file names.")
 
     return int(digits)
 
@@ -139,18 +139,21 @@ def handle_filename(filename):
     tpnumber = guess_tp_number(filename)
     logging.info("I guess this is TP number %s" % str(tpnumber))
 
-    tpdata = {'TPnum': tpnumber, 'items': []}  # initialize data structure for TP
+    tpdata = {'TPnum': tpnumber, 'items': []}  # initialize
+                                               # data structure for TP
 
     for line in codecs.open(filename, 'r', "utf-8"):
         components = FILEENTRY_REGEX.match(line.strip())
         if components:
 
-            itemname = desanitize(components.group(1))  # fix sanitizing of space character
+            itemname = desanitize(components.group(1))  # fix sanitizing of
+                                                        # space character
 
             logging.debug("---- match:    [%s]" % line.strip())
             logging.debug("  itemname: [%s]" % itemname)
 
-            itemdata = {'name': itemname, 'tags': []}  # initialize data structure for item
+            itemdata = {'name': itemname, 'tags': []}  # initialize data
+                                                       # structure for item
 
             taglist = components.group(3).split(',')
 
@@ -173,22 +176,37 @@ def handle_filename(filename):
 
 def traverse_dataset(dataset):
     """traverses the data structure of tpdata"""
-
-    ## example dataset of one TP with 2 items with several tags each:
-    ## [{'TPnum': 3, 'items': [
-    ##                       {'name': 'Abschaltung Krsko.pdf', 'tags': ['kernkraft', 'technik']},
-    ##                       {'name': '7 Fragen zu Atomkraft und Fukushima.pdf', 'tags': ['kernkraft', 'technik']},
-    ##                       {'name': 'Allergietest.jpg', 'tags': ['gesundheit', 'bild']}
-    ##                       ]}]
-
-    logging.debug("=========== dataset DUMP =================")
-    logging.debug("dataset has %s TPs" % str(len(dataset)))
     for tp in dataset:
-        logging.debug("TP number %s has %s items" % (str(tp['TPnum']), str(len(tp['items']))))
+        tag_count = 0
+        item_count = 0
         for item in tp['items']:
-            logging.debug("  item \"%s\" has %s tags" % (item['name'], str(len(item['tags']))))
+            item_count = item_count + 1
             for tag in item['tags']:
-                logging.debug("    tag \"%s\" has length %s" % (tag, len(tag)))
+                tag_count = tag_count + 1
+        logging.debug('TP %s; tag_count: %s, item_count: %s' %
+                      (tp['TPnum'], tag_count, item_count))
+
+    #calc_sum_tags(dataset)
+    # logging.debug("=========== dataset DUMP =================")
+    # logging.debug("dataset has %s TPs" % str(len(dataset)))
+    # for tp in dataset:
+    #     logging.debug("TP number %s has %s items" % (str(tp['TPnum']),
+    #                   str(len(tp['items']))))
+    #     for item in tp['items']:
+    #         logging.debug("  item \"%s\" has %s tags" % (item['name'],
+    #                       str(len(item['tags']))))
+    #         for tag in item['tags']:
+    #             logging.debug("    tag \"%s\" has length %s" % (tag,
+    #    len(tag)))
+
+
+def calc_sum_tags(dataset):
+    for tp in dataset:
+        tag_count = 0
+        for item in tp['items']:
+            for tag in item['tags']:
+                tag_count = tag_count + 1
+        logging.debug("Tag count for TP %s is %s." % (tp['TPnum'], tag_count))
 
 
 def main():
@@ -221,5 +239,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         logging.info("Received KeyboardInterrupt")
 
-## END OF FILE #################################################################
-# vim:foldmethod=indent expandtab ai ft=python tw=120 fileencoding=utf-8 shiftwidth=4
+## END OF FILE
+#################################################################
+# vim:foldmethod=indent expandtab ai ft=python
+# vim:tw=120 fileencoding=utf-8 shiftwidth=4
