@@ -83,6 +83,17 @@ class vk_FileNotFoundException(Exception):
         return repr(self.value)
 
 
+class testperson:
+    def __init__(self, number, tag_count, item_count):
+        self.number = number
+        self.tag_count = tag_count
+        self.item_count = item_count
+
+    def __repr__(self):
+        return "TP number: %s, tag_count: %s, item_count: %s" % (
+            self.number, self.tag_count, self.item_count)
+
+
 def handle_logging():
     """Log handling and configuration"""
 
@@ -176,6 +187,7 @@ def handle_filename(filename):
 
 def traverse_dataset(dataset):
     """traverses the data structure of tpdata"""
+    tp_list = []
     for tp in dataset:
         tag_count = 0
         item_count = 0
@@ -183,8 +195,10 @@ def traverse_dataset(dataset):
             item_count = item_count + 1
             for tag in item['tags']:
                 tag_count = tag_count + 1
-        logging.debug('TP %s; tag_count: %s, item_count: %s' %
-                      (tp['TPnum'], tag_count, item_count))
+        #logging.debug('TP %s; tag_count: %s, item_count: %s' %
+        #              (tp['TPnum'], tag_count, item_count))
+        tp_list.append(testperson(tp['TPnum'], tag_count, item_count))
+    logging.debug("tp_list = %s" % tp_list)
 
     #calc_sum_tags(dataset)
     # logging.debug("=========== dataset DUMP =================")
@@ -200,13 +214,19 @@ def traverse_dataset(dataset):
     #    len(tag)))
 
 
-def calc_sum_tags(dataset):
-    for tp in dataset:
-        tag_count = 0
-        for item in tp['items']:
-            for tag in item['tags']:
-                tag_count = tag_count + 1
-        logging.debug("Tag count for TP %s is %s." % (tp['TPnum'], tag_count))
+#def calc_tags_per_item():
+    # nothing yet
+
+
+# def write_csv():
+#     calc_tags_per_item()
+#     calc_sum_tags()
+#     calc_sum_item()
+#     calc_tag_length()
+#     calc_tag_variety_unique()
+#     calc_tag_variety_sum()
+#     calc_tag_single_usage()
+#     calc_usage_normalized()
 
 
 def main():
@@ -229,6 +249,8 @@ def main():
     logging.debug("finished parsing file")
 
     traverse_dataset(dataset)
+
+#    write_csv()
 
     logging.info("finished.")
 
