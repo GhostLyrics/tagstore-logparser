@@ -35,6 +35,10 @@ import pdb
 #counts the distinct words
 from collections import defaultdict
 
+#filenames
+file_sum_tags = "sum_tags.csv"
+file_sum_items = "sum_items.csv"
+
 ## ======================================================================= ##
 ##                                                                         ##
 ##         You should NOT need to modify anything below this line!         ##
@@ -92,6 +96,9 @@ class testperson:
     def __repr__(self):
         return "TP number: %s, tag_count: %s, item_count: %s" % (
             self.number, self.tag_count, self.item_count)
+
+    def __getitem__(self, number):
+        return self.number
 
 
 def handle_logging():
@@ -179,15 +186,14 @@ def handle_filename(filename):
             tpdata['items'].append(itemdata)
             #logging.debug("finished parsing one item")
     #pdb.set_trace()
-    logging.debug("finished parsing TP file \"%s\"" % filename)
+    logging.debug("Finished parsing TP file \"%s\"" % filename)
 
     #pdb.set_trace()
     return tpdata
 
 
-def traverse_dataset(dataset):
+def traverse_dataset(dataset, tp_list):
     """traverses the data structure of tpdata"""
-    tp_list = []
     for tp in dataset:
         tag_count = 0
         item_count = 0
@@ -214,14 +220,38 @@ def traverse_dataset(dataset):
     #    len(tag)))
 
 
-#def calc_tags_per_item():
-    # nothing yet
+def calc_tags_per_item():
+    logging.debug()
 
 
-# def write_csv():
+def calc_sum_tags(tp_list):
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
+    with open(file_sum_tags, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number", "Tag Count"])  # write header
+        for tp in tp_list:
+            writer.writerow([tp.number, tp.tag_count])
+    logging.info("File %s written" % file_sum_tags)
+
+
+def calc_sum_items(tp_list):
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
+    with open(file_sum_items, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number", "Item Count"])  # write header
+        for tp in tp_list:
+            writer.writerow([tp.number, tp.item_count])
+    logging.info("File %s written" % file_sum_items)
+
+
+def calc_tag_length(tp_list):
+    logging.debug()
+
+
+def write_csv(tp_list):
 #     calc_tags_per_item()
-#     calc_sum_tags()
-#     calc_sum_item()
+    calc_sum_tags(tp_list)  # done
+    calc_sum_items(tp_list)  # done
 #     calc_tag_length()
 #     calc_tag_variety_unique()
 #     calc_tag_variety_sum()
@@ -246,13 +276,15 @@ def main():
     for filename in args:
         dataset.append(handle_filename(filename))
 
-    logging.debug("finished parsing file")
+    logging.debug("Parsed all files")
 
-    traverse_dataset(dataset)
+    tp_list = []  # initialize the list of test persons
 
-#    write_csv()
+    traverse_dataset(dataset, tp_list)
 
-    logging.info("finished.")
+    write_csv(tp_list)
+
+    logging.info("Finished")
 
 
 if __name__ == "__main__":
