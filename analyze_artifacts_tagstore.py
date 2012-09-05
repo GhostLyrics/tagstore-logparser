@@ -25,6 +25,7 @@ import os         # accessing file system
 from optparse import OptionParser  # parsing command line options
 import re         # RegEx
 import codecs     # fixing UTF-8 issues
+from numpy import *  # computing standard deviation
 
 ## for CSV
 import csv
@@ -38,6 +39,8 @@ from collections import defaultdict
 #filenames
 file_sum_tags = "sum_tags.csv"
 file_sum_items = "sum_items.csv"
+file_tags_per_item = "tag_per_item.csv"
+file_tag_length = "tag_length.csv"
 
 ## ======================================================================= ##
 ##                                                                         ##
@@ -88,17 +91,22 @@ class vk_FileNotFoundException(Exception):
 
 
 class testperson:
-    def __init__(self, number, tag_count, item_count):
+    def __init__(self, number, tag_count, item_count,
+                 word_list, single_item_tag_count):
         self.number = number
         self.tag_count = tag_count
         self.item_count = item_count
+        self.word_list = word_list
+        self.single_item_tag_count = array(single_item_tag_count)
+
+        # calculations
+        self.tags_per_item = float(self.tag_count) / float(self.item_count)
+        self.tags_per_item_stddev = self.single_item_tag_count.std()
 
     def __repr__(self):
-        return "TP number: %s, tag_count: %s, item_count: %s" % (
-            self.number, self.tag_count, self.item_count)
-
-    def __getitem__(self, number):
-        return self.number
+        return """TP number: %s, tag_count: %s, item_count: %s\n\
+                  word_list: %s\n""" % (
+            self.number, self.tag_count, self.item_count, self.word_list)
 
 
 def handle_logging():
@@ -195,16 +203,27 @@ def handle_filename(filename):
 def traverse_dataset(dataset, tp_list):
     """traverses the data structure of tpdata"""
     for tp in dataset:
+        # init
         tag_count = 0
         item_count = 0
+        word_list = []
+        single_item_tag_count = []
+        tag_length = []
+
+        # calc
         for item in tp['items']:
+            single_item_counter = 0
             item_count = item_count + 1
             for tag in item['tags']:
+                single_item_counter = single_item_counter + 1
                 tag_count = tag_count + 1
-        #logging.debug('TP %s; tag_count: %s, item_count: %s' %
-        #              (tp['TPnum'], tag_count, item_count))
-        tp_list.append(testperson(tp['TPnum'], tag_count, item_count))
-    logging.debug("tp_list = %s" % tp_list)
+                word_list.append(tag)
+            single_item_tag_count.append(single_item_counter)
+
+        # finalize
+        tp_list.append(testperson(tp['TPnum'], tag_count, item_count,
+                       word_list, single_item_tag_count))
+    #logging.debug("tp_list = %s" % tp_list)
 
     #calc_sum_tags(dataset)
     # logging.debug("=========== dataset DUMP =================")
@@ -220,8 +239,16 @@ def traverse_dataset(dataset, tp_list):
     #    len(tag)))
 
 
-def calc_tags_per_item():
-    logging.debug()
+def calc_tags_per_item(tp_list):
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.tags_per_item)
+    with open(file_tags_per_item, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number", "Avg. Tags/Item", "Standard Deviation"])
+        for tp in tp_list:
+            logging.debug(tp.tags_per_item)
+            writer.writerow([tp.number, tp.tags_per_item,
+                             tp.tags_per_item_stddev])
+    logging.info("File written: %s" % file_tags_per_item)
 
 
 def calc_sum_tags(tp_list):
@@ -231,7 +258,7 @@ def calc_sum_tags(tp_list):
         writer.writerow(["TP Number", "Tag Count"])  # write header
         for tp in tp_list:
             writer.writerow([tp.number, tp.tag_count])
-    logging.info("File %s written" % file_sum_tags)
+    logging.info("File written: %s" % file_sum_tags)
 
 
 def calc_sum_items(tp_list):
@@ -241,15 +268,21 @@ def calc_sum_items(tp_list):
         writer.writerow(["TP Number", "Item Count"])  # write header
         for tp in tp_list:
             writer.writerow([tp.number, tp.item_count])
-    logging.info("File %s written" % file_sum_items)
+    logging.info("File written: %s" % file_sum_items)
 
 
 def calc_tag_length(tp_list):
-    logging.debug()
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
+    with open(file_tag_length, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number", "Avg. Tag Length", "Standard Deviation"])
+        for tp in tp_list:
+            writer.writerow([tp.number, tp.tag_length, tp.tag_length_stddev])
+    logging.info("File written: %s" % file_tag_length)
 
 
 def write_csv(tp_list):
-#     calc_tags_per_item()
+    calc_tags_per_item(tp_list)  # do I need to compute more stuff?
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
 #     calc_tag_length()
