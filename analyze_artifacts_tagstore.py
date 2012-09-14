@@ -26,6 +26,7 @@ from optparse import OptionParser  # parsing command line options
 import re         # RegEx
 import codecs     # fixing UTF-8 issues
 from numpy import *  # computing standard deviation
+from glob import glob  # file globbing is not done by the shell on Windows
 
 ## for CSV
 import csv
@@ -77,8 +78,10 @@ parser.add_option("-v", "--verbose", dest="verbose", action="store_true",
 parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                   help="do not output anything but just errors on console")
 
-
 (options, args) = parser.parse_args()
+print(options)
+print(args)
+print(glob(args[0]))
 
 
 class vk_FileNotFoundException(Exception):
@@ -306,7 +309,7 @@ def main():
 
     dataset = []  # initialize the dataset
 
-    for filename in args:
+    for filename in glob(args[0]):
         dataset.append(handle_filename(filename))
 
     logging.debug("Parsed all files")
