@@ -79,9 +79,6 @@ parser.add_option("-q", "--quiet", dest="quiet", action="store_true",
                   help="do not output anything but just errors on console")
 
 (options, args) = parser.parse_args()
-print(options)
-print(args)
-print(glob(args[0]))
 
 
 class vk_FileNotFoundException(Exception):
