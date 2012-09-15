@@ -18,4 +18,4 @@ xcuserdata
 CVS
 
 # tagstore logs
-.csv
+*.csv
