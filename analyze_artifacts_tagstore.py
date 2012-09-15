@@ -282,7 +282,7 @@ def calc_tag_length(tp_list):
 
 
 def write_csv(tp_list):
-    calc_tags_per_item(tp_list)  # do I need to compute more stuff?
+    calc_tags_per_item(tp_list)  # five points!
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
 #     calc_tag_length()
@@ -306,8 +306,14 @@ def main():
 
     dataset = []  # initialize the dataset
 
-    for filename in glob(args[0]):
-        dataset.append(handle_filename(filename))
+    for argument in args:
+        logging.debug("Received input %s" % (argument))
+        arg_list = []
+        arg_list = (glob(argument))
+        for filename in arg_list:
+            dataset.append(handle_filename(filename))
+#    for filename in glob(args[0]):
+#        dataset.append(handle_filename(filename))
 
     logging.debug("Parsed all files")
 
