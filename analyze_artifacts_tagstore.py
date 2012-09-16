@@ -46,6 +46,7 @@ file_tag_length = "tag_length"
 
 file_template_tag_variety = "tag_variety"
 
+
 ## ======================================================================= ##
 ##                                                                         ##
 ##         You should NOT need to modify anything below this line!         ##
@@ -305,12 +306,22 @@ def calc_tag_length(tp_list):
     logging.info("File written: %s" % (filename))
 
 
+def calc_tag_variety_unique(tp_list):
+    for tp in tp_list:
+        filename = file_template_tag_variety + tp.number + file_extension
+        with open(filename, "wb") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Tag", "Usage Count"])
+        logging.debug("File written: %s" % (filename))
+    logging.info("Files written: %s" % (file_template_tag_variety))
+
+
 def write_csv(tp_list):
     calc_tags_per_item(tp_list)  # five points!
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
     calc_tag_length(tp_list)  # five points!
-#     calc_tag_variety_unique()
+#    calc_tag_variety_unique(tp_list)
 #     calc_tag_variety_sum()
 #     calc_tag_single_usage()
 #     calc_usage_normalized()
