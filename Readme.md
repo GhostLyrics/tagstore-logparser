@@ -1,8 +1,8 @@
-Usage:  
+# Usage:
 The script assumes that `store.tgs` files have a number in their filename 
 (e.g. `store47.tgs`. It will immediately abort if this is not the case.
 
-Linux/Mac:  
+## Linux/Mac:
 We assume that the parser is not in your `$PATH`.
 
 * `chmod + x SCRIPTNAME`
@@ -10,7 +10,7 @@ We assume that the parser is not in your `$PATH`.
     Parsing multiple files in batch is possible and recommended.  
     (e.g. `./SCRIPTNAME FILE_TO_PARSE_1 FILE_TO_PARSE_2` etc.)
 
-Windows:  
+## Windows:
 Use CMD or preferably PowerShell.
 
 * `python SCRIPTNAME FILE_TO_PARSE`
@@ -18,7 +18,7 @@ Use CMD or preferably PowerShell.
     (e.g. `./SCRIPTNAME FILE_TO_PARSE_1 FILE_TO_PARSE_2` etc.)
 
 ---
-Additional hints:
+### Additional hints:
 To easily parse the whole current directory use `*` as a wildcard:
 
 * `./SCRIPTNAME *`
