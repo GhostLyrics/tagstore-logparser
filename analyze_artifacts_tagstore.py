@@ -15,7 +15,6 @@ See USAGE below for details!
 
 FIXXME:
     * look for the string FIXXME to improve this script
-    * encoding problems with tags containing German umlauts
 
 """
 
@@ -181,7 +180,6 @@ def desanitize(string):
 def handle_filename(filename):
     """Processes one tagstore.tgs file and store item/tag information"""
 
-    logging.debug("\n")
     logging.info("====> processing file [%s]" % filename)
 
     if not os.path.isfile(filename):
@@ -272,7 +270,7 @@ def calc_sum_tags(tp_list):
     # run
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["TP Number", "Tag Count"])  # write header
+        writer.writerow(["TP Number", "Tag Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.tag_count])
     logging.info("File written: %s" % (filename))
@@ -286,7 +284,7 @@ def calc_sum_items(tp_list):
     # run
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["TP Number", "Item Count"])  # write header
+        writer.writerow(["TP Number", "Item Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.item_count])
     logging.info("File written: %s" % (filename))
@@ -333,7 +331,7 @@ def main():
     dataset = []  # initialize the dataset
 
     for argument in args:
-        logging.debug("Received input %s" % (argument))
+        logging.debug("Received input %s\n" % (argument))
         arg_list = []
         arg_list = (glob(argument))
         for filename in arg_list:
