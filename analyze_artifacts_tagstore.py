@@ -45,7 +45,7 @@ file_tags_per_item = "tag_per_item"
 file_tag_length = "tag_length"
 
 file_template_tag_variety = "tag_variety"
-
+file_template_tag_reuse = "tag_reuse"
 
 ## ======================================================================= ##
 ##                                                                         ##
@@ -128,17 +128,31 @@ class testperson:
         tag_length_list = array(tag_length_list)
         return tag_length_list.std()
 
-    def buildTagUsageVariety(self):
+    def buildTagDictionary(self):
         # init
-        unique_tag_dict = {}
+        if not hasattr(self, 'unique_tag_dict'):
+            unique_tag_dict = {}
 
-        # calc
-        for tag in self.tag_list:
-            if tag in unique_tag_dict:  # if it's there, just increase count
-                unique_tag_dict.update({tag: unique_tag_dict.get(tag) + 1})
-            else:
-                unique_tag_dict.update({tag: 1})  # not there -> add it
-        self.unique_tag_dict = unique_tag_dict
+            # calc
+            for tag in self.tag_list:
+                if tag in unique_tag_dict:  # if it's there, just increase
+                    unique_tag_dict.update({tag: unique_tag_dict.get(tag) + 1})
+                else:
+                    unique_tag_dict.update({tag: 1})  # not there -> add it
+            self.unique_tag_dict = unique_tag_dict
+
+    def buildReuseDictionary(self):
+        # init
+        if not hasattr(self, 'reuse_dict'):
+            reuse_dict = {}
+
+            # calc
+            for count in self.number_tags_on_item_list:
+                if count in reuse_dict:
+                    reuse_dict.update({count: reuse_dict.get(count) + 1})
+                else:
+                    reuse_dict.update({count: 1})
+            self.reuse_dict = reuse_dict
 
     def __repr__(self):
         return "This is TP %s" % (self.number)
@@ -318,11 +332,11 @@ def calc_tag_length(tp_list):
     logging.info("File written: %s" % (filename))
 
 
-def calc_tag_variety_unique(tp_list):
+def calc_tag_variety(tp_list):
     for tp in tp_list:
         # init
         filename = file_template_tag_variety + str(tp.number) + file_extension
-        tp.buildTagUsageVariety()  # build dict to sort for output
+        tp.buildTagDictionary()  # build dict to sort for output
         tag_dict = sorted(tp.unique_tag_dict,
                           key=tp.unique_tag_dict.get,
                           reverse=True)
@@ -337,13 +351,30 @@ def calc_tag_variety_unique(tp_list):
     logging.info("Section written: %s" % (file_template_tag_variety))
 
 
+def calc_tag_reuse(tp_list):
+    for tp in tp_list:
+        # init
+        filename = file_template_tag_reuse + str(tp.number) + file_extension
+        tp.buildReuseDictionary()
+        reuse_dict = sorted(tp.reuse_dict, reverse=True)
+
+        # run
+        with open(filename, "wb") as f:
+            writer = csv.writer(f)
+            writer.writerow(["Tag Count per Item", "Occurrence"])
+            for number in reuse_dict:
+                writer.writerow([number, tp.reuse_dict.get(number)])
+        logging.debug("File written: %s" % (filename))
+    logging.info("Section written: %s" % (file_template_tag_reuse))
+
+
 def write_csv(tp_list):
     calc_tags_per_item(tp_list)  # five points!
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
     calc_tag_length(tp_list)  # five points!
-    calc_tag_variety_unique(tp_list)  # done
-#     calc_tag_variety_sum(tp_list)
+    calc_tag_variety(tp_list)  # done
+    calc_tag_reuse(tp_list)  # done
 #     calc_tag_single_usage(tp_list)
 #     calc_usage_normalized(tp_list)
 
