@@ -128,23 +128,23 @@ class testperson:
         tag_length_list = array(tag_length_list)
         return tag_length_list.std()
 
-    def getTagUsageVariety(self):
+    def buildTagUsageVariety(self):
         # init
-        tmp_tag_list = []
+        unique_tag_dict = {}
 
         # calc
-#        for tag in self.tag_list:
+        for tag in self.tag_list:
+            if tag in unique_tag_dict:
+                logging.debug("%s is already in dictionary" % tag)
+                unique_tag_dict.update({tag: unique_tag_dict.get(tag) + 1})
+            else:
+                logging.debug("%s has been added to dictionary" % tag)
+                unique_tag_dict.update({tag: 1})
+        logging.debug(unique_tag_dict)
+        self.unique_tag_dict = unique_tag_dict
 
     def __repr__(self):
-        return """This is TP #%s""" % (self.number)
-
-
-class tag_usage:
-    def __init_(self):
-        self.usage_count = 0
-
-    def incr(self):
-        self.usage_count = self.usage_count + 1
+        return "This is TP %s" % (self.number)
 
 
 def handle_logging():
@@ -249,10 +249,10 @@ def traverse_dataset(dataset, tp_list):
         # calc
         for item in tp['items']:
             single_item_counter = 0
-            item_count = item_count + 1
+            item_count += 1
             for tag in item['tags']:
-                single_item_counter = single_item_counter + 1
-                tag_count = tag_count + 1
+                single_item_counter += 1
+                tag_count += 1
                 tag_list.append(tag)
             number_tags_on_item_list.append(single_item_counter)
 
@@ -321,12 +321,19 @@ def calc_tag_length(tp_list):
 
 def calc_tag_variety_unique(tp_list):
     for tp in tp_list:
-        filename = file_template_tag_variety + tp.number + file_extension
+        filename = file_template_tag_variety + str(tp.number) + file_extension
+        tp.buildTagUsageVariety()
         with open(filename, "wb") as f:
             writer = csv.writer(f)
             writer.writerow(["Tag", "Usage Count"])
+#            tp.tag_list = sorted(
+#                tp.unique_tag_dict,
+#                key=lambda taglist: taglist.usage_count)
+        #    for tag in tp.tag_list:
+                #writer.writerow([unique_tag_list.tag,
+                #                unique_tag_list.usage_count])
         logging.debug("File written: %s" % (filename))
-    logging.info("Files written: %s" % (file_template_tag_variety))
+    logging.info("Section written: %s" % (file_template_tag_variety))
 
 
 def write_csv(tp_list):
@@ -334,7 +341,7 @@ def write_csv(tp_list):
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
     calc_tag_length(tp_list)  # five points!
-#    calc_tag_variety_unique(tp_list)
+    calc_tag_variety_unique(tp_list)
 #     calc_tag_variety_sum(tp_list)
 #     calc_tag_single_usage(tp_list)
 #     calc_usage_normalized(tp_list)
