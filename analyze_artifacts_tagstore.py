@@ -96,11 +96,11 @@ class vk_FileNotFoundException(Exception):
 
 class testperson:
     def __init__(self, number, tag_count, item_count,
-                 word_list, number_tags_on_item_list):
+                 tag_list, number_tags_on_item_list):
         self.number = number
         self.tag_count = tag_count
         self.item_count = item_count
-        self.word_list = word_list
+        self.tag_list = tag_list
         self.number_tags_on_item_list = array(number_tags_on_item_list)
 
         # calculations: tags per item; has to be done this way in order to
@@ -113,7 +113,7 @@ class testperson:
         tag_length_sum = 0
 
         # calc
-        for tag in self.word_list:
+        for tag in self.tag_list:
             tag_length_sum = tag_length_sum + len(tag)
         tag_length = float(tag_length_sum) / float(self.tag_count)
         return tag_length
@@ -123,15 +123,28 @@ class testperson:
         tag_length_list = []
 
         # calc
-        for tag in self.word_list:
+        for tag in self.tag_list:
             tag_length_list.append(len(tag))
         tag_length_list = array(tag_length_list)
         return tag_length_list.std()
 
-#    def get
+    def getTagUsageVariety(self):
+        # init
+        tmp_tag_list = []
+
+        # calc
+#        for tag in self.tag_list:
 
     def __repr__(self):
         return """This is TP #%s""" % (self.number)
+
+
+class tag_usage:
+    def __init_(self):
+        self.usage_count = 0
+
+    def incr(self):
+        self.usage_count = self.usage_count + 1
 
 
 def handle_logging():
@@ -229,7 +242,7 @@ def traverse_dataset(dataset, tp_list):
         # init
         tag_count = 0
         item_count = 0
-        word_list = []
+        tag_list = []
         number_tags_on_item_list = []
         tag_length = []
 
@@ -240,12 +253,12 @@ def traverse_dataset(dataset, tp_list):
             for tag in item['tags']:
                 single_item_counter = single_item_counter + 1
                 tag_count = tag_count + 1
-                word_list.append(tag)
+                tag_list.append(tag)
             number_tags_on_item_list.append(single_item_counter)
 
         # finalize
         tp_list.append(testperson(tp['TPnum'], tag_count, item_count,
-                       word_list, number_tags_on_item_list))
+                       tag_list, number_tags_on_item_list))
 
 
 def calc_tags_per_item(tp_list):
@@ -322,9 +335,9 @@ def write_csv(tp_list):
     calc_sum_items(tp_list)  # done
     calc_tag_length(tp_list)  # five points!
 #    calc_tag_variety_unique(tp_list)
-#     calc_tag_variety_sum()
-#     calc_tag_single_usage()
-#     calc_usage_normalized()
+#     calc_tag_variety_sum(tp_list)
+#     calc_tag_single_usage(tp_list)
+#     calc_usage_normalized(tp_list)
 
 
 def main():
