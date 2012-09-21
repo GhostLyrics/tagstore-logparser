@@ -284,8 +284,9 @@ def calc_tags_per_item(tp_list):
         writer = csv.writer(f)
         writer.writerow(["TP Number", "Avg. Tags/Item", "Standard Deviation"])
         for tp in tp_list:
-            writer.writerow([tp.number, tp.tags_per_item,
-                             tp.tags_per_item_stddev])
+            writer.writerow([tp.number,
+                            "{0:.2f}".format(tp.tags_per_item),
+                            "{0:.2f}".format(tp.tags_per_item_stddev)])
     logging.info("File written: %s" % (filename))
 
 
@@ -327,8 +328,10 @@ def calc_tag_length(tp_list):
         writer = csv.writer(f)
         writer.writerow(["TP Number", "Avg. Tag Length", "Standard Deviation"])
         for tp in tp_list:
-            writer.writerow([tp.number, tp.getAverageTagLength(),
-                            tp.getTagLengthStandardDeviation()])
+            writer.writerow([tp.number,
+                            "{0:.2f}".format(tp.getAverageTagLength()),
+                            "{0:.2f}".format(
+                                tp.getTagLengthStandardDeviation())])
     logging.info("File written: %s" % (filename))
 
 
