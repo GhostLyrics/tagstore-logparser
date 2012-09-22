@@ -140,6 +140,11 @@ class testperson:
                 else:
                     unique_tag_dict.update({tag: 1})  # not there -> add it
             self.unique_tag_dict = unique_tag_dict
+            logging.debug("Tag Dictionary for TP %s built" % self.number)
+
+        else:
+            logging.debug("""Tag Dictionary for TP %s
+                          already exists, skipping build""" % self.number)
 
     def buildReuseDictionary(self):
         # init
@@ -153,6 +158,11 @@ class testperson:
                 else:
                     reuse_dict.update({count: 1})
             self.reuse_dict = reuse_dict
+            logging.debug("Usage Dictionary for TP %s built" % self.number)
+
+        else:
+            logging.debug("""Usage Dictionary for TP %s already exists,
+                          skipping build""" % self.number)
 
     def __repr__(self):
         return "This is TP %s" % (self.number)
