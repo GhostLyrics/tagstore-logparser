@@ -24,7 +24,7 @@ import os         # accessing file system
 from optparse import OptionParser  # parsing command line options
 import re         # RegEx
 import codecs     # fixing UTF-8 issues
-from numpy import *  # computing standard deviation
+from numpy import array, std  # computing standard deviation
 from glob import glob  # file globbing is not done by the shell on Windows
 
 ## for CSV
