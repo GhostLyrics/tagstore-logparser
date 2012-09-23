@@ -209,11 +209,11 @@ def fivenum(input_list):
     q3 = scoreatpercentile(input_list, 75)
     md = median(input_list)
 
-    five = {'min': (min(input_list)),
-            'q1': (q1),
+    five = {'min': min(input_list),
+            'q1': q1,
             'med': md,
-            'q3': (q3),
-            'max': (max(input_list))}
+            'q3': q3,
+            'max': max(input_list)}
     return five
 
 
@@ -350,9 +350,7 @@ def calc_tags_per_item(tp_list):
                          "Third Quartille",
                          "Maximum"])
         for tp in tp_list:
-            logging.debug(tp.number_tags_on_item_list)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
-            logging.debug(fivenumbers)
             writer.writerow([tp.number,
                             "{0:.2f}".format(tp.tags_per_item),
                             "{0:.2f}".format(tp.tags_per_item_stddev),
@@ -411,9 +409,7 @@ def calc_tag_length(tp_list):
         for tp in tp_list:
             # init
             tp.buildTagLengthList()
-            logging.debug(tp.tag_length_list)
             fivenumbers = fivenum(tp.tag_length_list)
-            logging.debug(fivenumbers)
 
             # run
             writer.writerow([tp.number,
