@@ -127,15 +127,14 @@ class testperson:
         tag_length = float(tag_length_sum) / float(self.tag_count)
         return tag_length
 
-    def getTagLengthStandardDeviation(self):
+    def buildTagLengthList(self):
         # init
         tag_length_list = []
 
         # calc
         for tag in self.tag_list:
             tag_length_list.append(len(tag))
-        tag_length_list = array(tag_length_list)
-        return tag_length_list.std()
+        self.tag_length_list = array(tag_length_list)
 
     def buildTagDictionary(self):
         # init
@@ -208,14 +207,12 @@ class testperson:
 def fivenum(input_list):
     q1 = scoreatpercentile(input_list, 25)
     q3 = scoreatpercentile(input_list, 75)
-    iqd = q3 - q1
     md = median(input_list)
-    whisker = 1.5 * iqd
 
     five = {'min': (min(input_list)),
-            'lower': (md - whisker),
+            'q1': (q1),
             'med': md,
-            'upper': (md + whisker),
+            'q3': (q3),
             'max': (max(input_list))}
     return five
 
@@ -348,19 +345,21 @@ def calc_tags_per_item(tp_list):
                          "Avg. Tags/Item",
                          "Standard Deviation",
                          "Minimum",
-                         "Lower-Hinge",
+                         "First Quartille",
                          "Median",
-                         "Upper-Hinge",
+                         "Third Quartille",
                          "Maximum"])
         for tp in tp_list:
+            logging.debug(tp.number_tags_on_item_list)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
+            logging.debug(fivenumbers)
             writer.writerow([tp.number,
                             "{0:.2f}".format(tp.tags_per_item),
                             "{0:.2f}".format(tp.tags_per_item_stddev),
                             fivenumbers.get('min'),
-                            fivenumbers.get('lower'),
+                            fivenumbers.get('q1'),
                             fivenumbers.get('med'),
-                            fivenumbers.get('upper'),
+                            fivenumbers.get('q3'),
                             fivenumbers.get('max')])
     logging.info("File written: %s" % (filename))
 
@@ -401,12 +400,31 @@ def calc_tag_length(tp_list):
     # run
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["TP Number", "Avg. Tag Length", "Standard Deviation"])
+        writer.writerow(["TP Number",
+                         "Avg. Tag Length",
+                         "Standard Deviation",
+                         "Minimum",
+                         "First Quartille",
+                         "Median",
+                         "Third Quartille",
+                         "Maximum"])
         for tp in tp_list:
+            # init
+            tp.buildTagLengthList()
+            logging.debug(tp.tag_length_list)
+            fivenumbers = fivenum(tp.tag_length_list)
+            logging.debug(fivenumbers)
+
+            # run
             writer.writerow([tp.number,
                             "{0:.2f}".format(tp.getAverageTagLength()),
                             "{0:.2f}".format(
-                                tp.getTagLengthStandardDeviation())])
+                                tp.tag_length_list.std()),
+                            fivenumbers.get('min'),
+                            fivenumbers.get('q1'),
+                            fivenumbers.get('med'),
+                            fivenumbers.get('q3'),
+                            fivenumbers.get('max')])
     logging.info("File written: %s" % (filename))
 
 
