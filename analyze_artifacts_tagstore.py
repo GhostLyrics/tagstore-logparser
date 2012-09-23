@@ -44,6 +44,7 @@ file_sum_items = "sum_items"
 file_tags_per_item = "tag_per_item"
 file_tag_length = "tag_length"
 file_single_usage = "single_usage"
+file_usage_normalized = "usage_normalized"
 
 file_template_tag_variety = "tag_variety"
 file_template_tag_reuse = "tag_reuse"
@@ -167,9 +168,21 @@ class testperson:
 
     def getPercentageOfSingleTags(self):
         # init
+        single_usage_tag_counter = 0
+        percentage = 0
         self.buildTagDictionary()
-        return 4  # TODO: of course not four ^^
-        # stuff
+
+        # run
+        for tag in self.unique_tag_dict:
+            if self.unique_tag_dict.get(tag) is 1:
+                single_usage_tag_counter += 1
+        percentage = (float(len(self.unique_tag_dict))  # not sure
+                      / 100 * single_usage_tag_counter)  # I hope this is right
+        return percentage
+
+    def getUsageNormalized(self):
+        # init
+        return 42  # TODO: implement metric
 
     def __repr__(self):
         return "This is TP %s" % (self.number)
@@ -404,6 +417,22 @@ def calc_tag_single_usage(tp_list):
     logging.info("File written: %s" % (filename))
 
 
+def calc_usage_normalized(tp_list):
+    # init
+    filename = file_usage_normalized + file_extension
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
+
+    # run
+    with open(filename, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number",
+                         "Average Usage of Tags, normalized"])
+        for tp in tp_list:
+            writer.writerow([tp.number,
+                             "{0:.2f}".format(tp.getUsageNormalized())])
+    logging.info("File written: %s" % (filename))
+
+
 def write_csv(tp_list):
     calc_tags_per_item(tp_list)  # five points!
     calc_sum_tags(tp_list)  # done
@@ -412,7 +441,7 @@ def write_csv(tp_list):
     calc_tag_variety(tp_list)  # done
     calc_tag_reuse(tp_list)  # done
     calc_tag_single_usage(tp_list)
-#     calc_usage_normalized(tp_list)
+    calc_usage_normalized(tp_list)
 
 
 def main():
