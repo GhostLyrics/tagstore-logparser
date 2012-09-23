@@ -24,8 +24,15 @@ import os         # accessing file system
 from optparse import OptionParser  # parsing command line options
 import re         # RegEx
 import codecs     # fixing UTF-8 issues
-from numpy import array, std  # computing standard deviation
-from glob import glob  # file globbing is not done by the shell on Windows
+
+## maths
+from numpy import array, std, sum, median, min, max
+from scipy.stats import scoreatpercentile
+import matplotlib.pyplot
+
+## globbing on Windows
+from glob import glob
+
 
 ## for CSV
 import csv
@@ -198,6 +205,21 @@ class testperson:
         return "This is TP %s" % (self.number)
 
 
+def fivenum(input_list):
+    q1 = scoreatpercentile(input_list, 25)
+    q3 = scoreatpercentile(input_list, 75)
+    iqd = q3 - q1
+    md = median(input_list)
+    whisker = 1.5 * iqd
+
+    five = {'min': (min(input_list)),
+            'lower': (md - whisker),
+            'med': md,
+            'upper': (md + whisker),
+            'max': (max(input_list))}
+    return five
+
+
 def handle_logging():
     """Log handling and configuration"""
 
@@ -322,11 +344,24 @@ def calc_tags_per_item(tp_list):
     # run
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
-        writer.writerow(["TP Number", "Avg. Tags/Item", "Standard Deviation"])
+        writer.writerow(["TP Number",
+                         "Avg. Tags/Item",
+                         "Standard Deviation",
+                         "Minimum",
+                         "Lower-Hinge",
+                         "Median",
+                         "Upper-Hinge",
+                         "Maximum"])
         for tp in tp_list:
+            fivenumbers = fivenum(tp.number_tags_on_item_list)
             writer.writerow([tp.number,
                             "{0:.2f}".format(tp.tags_per_item),
-                            "{0:.2f}".format(tp.tags_per_item_stddev)])
+                            "{0:.2f}".format(tp.tags_per_item_stddev),
+                            fivenumbers.get('min'),
+                            fivenumbers.get('lower'),
+                            fivenumbers.get('med'),
+                            fivenumbers.get('upper'),
+                            fivenumbers.get('max')])
     logging.info("File written: %s" % (filename))
 
 
@@ -444,14 +479,14 @@ def calc_usage_normalized(tp_list):
 
 
 def write_csv(tp_list):
-    calc_tags_per_item(tp_list)  # five points!
+    calc_tags_per_item(tp_list)  # missing plot
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
-    calc_tag_length(tp_list)  # five points!
+    calc_tag_length(tp_list)  # missing plot
     calc_tag_variety(tp_list)  # done
     calc_tag_reuse(tp_list)  # done
-    calc_tag_single_usage(tp_list)
-    calc_usage_normalized(tp_list)
+    calc_tag_single_usage(tp_list)  # done
+    calc_usage_normalized(tp_list)  # done
 
 
 def main():
