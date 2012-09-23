@@ -43,6 +43,7 @@ file_sum_tags = "sum_tags"
 file_sum_items = "sum_items"
 file_tags_per_item = "tag_per_item"
 file_tag_length = "tag_length"
+file_single_usage = "single_usage"
 
 file_template_tag_variety = "tag_variety"
 file_template_tag_reuse = "tag_reuse"
@@ -143,8 +144,8 @@ class testperson:
             logging.debug("Tag Dictionary for TP %s built" % self.number)
 
         else:
-            logging.debug("""Tag Dictionary for TP %s
-                          already exists, skipping build""" % self.number)
+            logging.debug("Tag Dictionary for TP %s " % self.number
+                          + "already exists, skipping build")
 
     def buildReuseDictionary(self):
         # init
@@ -161,8 +162,14 @@ class testperson:
             logging.debug("Usage Dictionary for TP %s built" % self.number)
 
         else:
-            logging.debug("""Usage Dictionary for TP %s already exists,
-                          skipping build""" % self.number)
+            logging.debug("Usage Dictionary for TP %s " % self.number
+                          + "already exists, skipping build")
+
+    def getPercentageOfSingleTags(self):
+        # init
+        self.buildTagDictionary()
+        return 4  # TODO: of course not four ^^
+        # stuff
 
     def __repr__(self):
         return "This is TP %s" % (self.number)
@@ -381,6 +388,22 @@ def calc_tag_reuse(tp_list):
     logging.info("Section written: %s" % (file_template_tag_reuse))
 
 
+def calc_tag_single_usage(tp_list):
+    # init
+    filename = file_single_usage + file_extension
+    tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
+
+    # run
+    with open(filename, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(["TP Number",
+                         "Percentage of Tags with single Occurrence"])
+        for tp in tp_list:
+            writer.writerow([tp.number,
+                            "{0:.2f}".format(tp.getPercentageOfSingleTags())])
+    logging.info("File written: %s" % (filename))
+
+
 def write_csv(tp_list):
     calc_tags_per_item(tp_list)  # five points!
     calc_sum_tags(tp_list)  # done
@@ -388,7 +411,7 @@ def write_csv(tp_list):
     calc_tag_length(tp_list)  # five points!
     calc_tag_variety(tp_list)  # done
     calc_tag_reuse(tp_list)  # done
-#     calc_tag_single_usage(tp_list)
+    calc_tag_single_usage(tp_list)
 #     calc_usage_normalized(tp_list)
 
 
