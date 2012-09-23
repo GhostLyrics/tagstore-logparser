@@ -182,7 +182,17 @@ class testperson:
 
     def getUsageNormalized(self):
         # init
-        return 42  # TODO: implement metric
+        mean_value = 0
+        sum_usage = 0
+        normalized_value = 0
+        self.buildTagDictionary()
+
+        # run
+        for tag in self.unique_tag_dict:
+            sum_usage = sum_usage + self.unique_tag_dict.get(tag)
+        mean_value = sum_usage / float(len(self.unique_tag_dict))
+        normalized_value = mean_value / self.item_count
+        return normalized_value
 
     def __repr__(self):
         return "This is TP %s" % (self.number)
