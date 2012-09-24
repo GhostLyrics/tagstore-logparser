@@ -28,7 +28,7 @@ import codecs     # fixing UTF-8 issues
 ## maths
 from numpy import array, std, sum, median, min, max
 from scipy.stats import scoreatpercentile
-import matplotlib.pyplot
+from pylab import boxplot, savefig, figure
 
 ## globbing on Windows
 from glob import glob
@@ -334,6 +334,7 @@ def traverse_dataset(dataset, tp_list):
 def calc_tags_per_item(tp_list):
     # init
     filename = file_tags_per_item + file_extension
+    filename_plot = file_tags_per_item + '_plot'
     tp_list = sorted(tp_list,
                      key=lambda testperson: testperson.tags_per_item,
                      reverse=True)
@@ -359,6 +360,10 @@ def calc_tags_per_item(tp_list):
                             fivenumbers.get('med'),
                             fivenumbers.get('q3'),
                             fivenumbers.get('max')])
+            figure()
+            boxplot(tp.number_tags_on_item_list)
+            savefig(filename_plot + str(tp.number))
+            logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
     logging.info("File written: %s" % (filename))
 
 
@@ -393,6 +398,7 @@ def calc_sum_items(tp_list):
 def calc_tag_length(tp_list):
     # init
     filename = file_tag_length + file_extension
+    filename_plot = file_tag_length + '_plot'
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
@@ -421,6 +427,10 @@ def calc_tag_length(tp_list):
                             fivenumbers.get('med'),
                             fivenumbers.get('q3'),
                             fivenumbers.get('max')])
+            figure()
+            boxplot(tp.tag_length_list)
+            savefig(filename_plot + str(tp.number))
+            logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
     logging.info("File written: %s" % (filename))
 
 
@@ -493,10 +503,10 @@ def calc_usage_normalized(tp_list):
 
 
 def write_csv(tp_list):
-    calc_tags_per_item(tp_list)  # missing plot
+    calc_tags_per_item(tp_list)  # done
     calc_sum_tags(tp_list)  # done
     calc_sum_items(tp_list)  # done
-    calc_tag_length(tp_list)  # missing plot
+    calc_tag_length(tp_list)  # looks crappy
     calc_tag_variety(tp_list)  # done
     calc_tag_reuse(tp_list)  # done
     calc_tag_single_usage(tp_list)  # done
