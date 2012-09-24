@@ -109,13 +109,17 @@ class testperson:
         self.number = number
         self.tag_count = tag_count
         self.item_count = item_count
-        self.tag_list = tag_list
+        self.tag_list = []
         self.number_tags_on_item_list = array(number_tags_on_item_list)
 
         # calculations: tags per item; has to be done this way in order to
         #               enable sorting of the list of testperson-objects
         self.tags_per_item = float(self.tag_count) / float(self.item_count)
         self.tags_per_item_stddev = self.number_tags_on_item_list.std()
+
+        # encoding all tags to unicode
+        for tag in tag_list:
+            self.tag_list.append(tag.encode('utf-8'))
 
     def getAverageTagLength(self):
         # init
