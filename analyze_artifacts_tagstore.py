@@ -7,9 +7,10 @@
 analyze_artifacts_tagstore.py
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-:copyright: (c) 2012 by Karl Voit <Karl.Voit@IST.TUGraz.at>
+:copyright: (c) 2012 by Karl Voit <Karl.Voit@IST.TUGraz.at>,
+:                       Alexander Skiba <mail@ghostlyrics.net>
 :license: GPL v2 or any later version
-:bugreports: <Karl.Voit@IST.TUGraz.at>
+:bugreports: https://github.com/GhostLyrics/tagstore-logparser
 
 See USAGE below for details!
 
@@ -78,8 +79,9 @@ Output will be written to CSV files.\n\
 \n\
   :URL:        https://github.com/novoid/2011-04-tagstore-formal-experiment\n\
   :copyright:  (c) 2012 by Karl Voit <Karl.Voit@IST.TUGraz.at>\n\
+                           Alexander Skiba <mail@ghostlyrics.net>\n\
   :license:    GPL v2 or any later version\n\
-  :bugreports: <Karl.Voit@IST.TUGraz.at>\n\
+  :bugreports: https://github.com/GhostLyrics/tagstore-logparser\n\
 \n\
 Run %prog --help for usage hints\n"
 
@@ -521,7 +523,8 @@ def main():
     """Main function [make pylint happy :)]"""
 
     print "                analyze_artifacts_tagstore.py\n"
-    print "          (c) 2012 by Karl Voit <Karl.Voit@IST.TUGraz.at>"
+    print "          (c) 2012 by Karl Voit <Karl.Voit@IST.TUGraz.at>,"
+    print "                      Alexander Skiba <mail@ghostlyrics.net>"
     print "              GPL v2 or any later version\n"
 
     handle_logging()
