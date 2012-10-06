@@ -211,6 +211,7 @@ class testperson:
 
 
 def fivenum(input_list):
+    """Returns a dictionary with the five point summary for a given list"""
     q1 = scoreatpercentile(input_list, 25)
     q3 = scoreatpercentile(input_list, 75)
     md = median(input_list)
@@ -224,7 +225,7 @@ def fivenum(input_list):
 
 
 def display(float_value):
-    # this exists to display nicer values and genereally save typing
+    """Display nicer values and generally save typing"""
     return "{0:.2f}".format(float_value)
 
 
@@ -351,9 +352,10 @@ def calc_tags_per_item(tp_list):
                      reverse=True)
 
     # init global
-    global_array = []
+    global_array = []  # contains all the values in order to generate a boxplot
+                       # for all testpersons combined
 
-    # run
+    # run per testperson
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
@@ -365,8 +367,11 @@ def calc_tags_per_item(tp_list):
                          "Third Quartille",
                          "Maximum"])
         for tp in tp_list:
+            # init
             global_array.append(tp.tags_per_item)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
+
+            # run
             writer.writerow([tp.number,
                             display(tp.tags_per_item),
                             display(tp.tags_per_item_stddev),
@@ -383,6 +388,7 @@ def calc_tags_per_item(tp_list):
             boxplot(tp.number_tags_on_item_list)  # TODO: axis description
             savefig(filename_plot + str(tp.number))
             logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
+    logging.info("File written: %s" % (filename))
 
     # run global
     global_fivenumbers = fivenum(global_array)
@@ -395,7 +401,7 @@ def calc_tags_per_item(tp_list):
                          'Median',
                          'Third Quartille',
                          'Maximum'])
-        writer.writerow([display((mean(global_array))),
+        writer.writerow([display(mean(global_array)),
                          display((std(global_array))),
                          display(global_fivenumbers.get('min')),
                          display(global_fivenumbers.get('q1')),
@@ -407,7 +413,6 @@ def calc_tags_per_item(tp_list):
     boxplot(global_array)  # TODO: axis description
     savefig('global_' + filename_plot)
     logging.debug("Plot drawn: %s" % ('global_' + filename_plot))
-    logging.info("File written: %s" % (filename))
 
 
 def calc_sum_tags(tp_list):
@@ -444,7 +449,11 @@ def calc_tag_length(tp_list):
     filename_plot = file_tag_length + '_plot'
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
-    # run
+    # init global
+    global_array = []  # contains all the values in order to generate a boxplot
+                       # for all testpersons combined
+
+    # run for test person
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
@@ -458,6 +467,8 @@ def calc_tag_length(tp_list):
         for tp in tp_list:
             # init
             tp.buildTagLengthList()
+            for tag_length in tp.tag_length_list:
+                global_array.append(tag_length)
             fivenumbers = fivenum(tp.tag_length_list)
 
             # run
@@ -474,6 +485,30 @@ def calc_tag_length(tp_list):
             savefig(filename_plot + str(tp.number))
             logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
     logging.info("File written: %s" % (filename))
+
+    # run global
+    global_fivenumbers = fivenum(global_array)
+    with open(('global_' + filename), 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Avg. Tag Length',
+                         'Standard Deviation',
+                         'Minimum',
+                         'First Quartille',
+                         'Median',
+                         'Third Quartille',
+                         'Maximum'])
+        writer.writerow([display(mean(global_array)),
+                         display(std(global_array)),
+                         display(global_fivenumbers.get('min')),
+                         display(global_fivenumbers.get('q1')),
+                         display(global_fivenumbers.get('med')),
+                         display(global_fivenumbers.get('q3')),
+                         display(global_fivenumbers.get('max'))])
+    logging.info('File written: %s' % ('global_' + filename))
+    figure()
+    boxplot(global_array)  # TODO. axis description
+    savefig('global_' + filename_plot)
+    logging.debug('Plot drawn: %s' % ('global_' + filename_plot))
 
 
 def calc_tag_variety(tp_list):
