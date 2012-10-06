@@ -27,7 +27,7 @@ import re         # RegEx
 import codecs     # fixing UTF-8 issues
 
 ## maths
-from numpy import array, std, sum, median, min, max
+from numpy import array, std, sum, median, min, max, mean
 from scipy.stats import scoreatpercentile
 from pylab import boxplot, savefig, figure
 
@@ -223,6 +223,11 @@ def fivenum(input_list):
     return five
 
 
+def display(float_value):
+    # this exists to display nicer values and genereally save typing
+    return "{0:.2f}".format(float_value)
+
+
 def handle_logging():
     """Log handling and configuration"""
 
@@ -345,6 +350,9 @@ def calc_tags_per_item(tp_list):
                      key=lambda testperson: testperson.tags_per_item,
                      reverse=True)
 
+    # init global
+    global_array = []
+
     # run
     with open(filename, 'wb') as f:
         writer = csv.writer(f)
@@ -357,10 +365,11 @@ def calc_tags_per_item(tp_list):
                          "Third Quartille",
                          "Maximum"])
         for tp in tp_list:
+            global_array.append(tp.tags_per_item)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
             writer.writerow([tp.number,
-                            "{0:.2f}".format(tp.tags_per_item),
-                            "{0:.2f}".format(tp.tags_per_item_stddev),
+                            display(tp.tags_per_item),
+                            display(tp.tags_per_item_stddev),
                             fivenumbers.get('min'),
                             fivenumbers.get('q1'),
                             fivenumbers.get('med'),
@@ -370,6 +379,29 @@ def calc_tags_per_item(tp_list):
             boxplot(tp.number_tags_on_item_list)
             savefig(filename_plot + str(tp.number))
             logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
+
+    # run global
+    global_fivenumbers = fivenum(global_array)
+    with open((filename + '_global' + file_extension), 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Avg. Tags/Item',
+                         'Standard Deviation',
+                         'Minimum',
+                         'First Quartille',
+                         'Median',
+                         'Third Quartille',
+                         'Maximum'])
+        writer.writerow([display((mean(global_array))),
+                         display((std(global_array))),
+                         display(global_fivenumbers.get('min')),
+                         display(global_fivenumbers.get('q1')),
+                         display(global_fivenumbers.get('med')),
+                         display(global_fivenumbers.get('q3')),
+                         display(global_fivenumbers.get('max'))])
+    figure()
+    boxplot(global_array)
+    savefig(filename_plot + '_global')
+    logging.debug("Plot drawn: %s" % (filename_plot + '_global'))
     logging.info("File written: %s" % (filename))
 
 
@@ -425,9 +457,8 @@ def calc_tag_length(tp_list):
 
             # run
             writer.writerow([tp.number,
-                            "{0:.2f}".format(tp.getAverageTagLength()),
-                            "{0:.2f}".format(
-                                tp.tag_length_list.std()),
+                            display(tp.getAverageTagLength()),
+                            display(tp.tag_length_list.std()),
                             fivenumbers.get('min'),
                             fivenumbers.get('q1'),
                             fivenumbers.get('med'),
@@ -488,7 +519,7 @@ def calc_tag_single_usage(tp_list):
                          "Percentage of Tags with single Occurrence"])
         for tp in tp_list:
             writer.writerow([tp.number,
-                            "{0:.2f}".format(tp.getPercentageOfSingleTags())])
+                            display(tp.getPercentageOfSingleTags())])
     logging.info("File written: %s" % (filename))
 
 
@@ -504,7 +535,7 @@ def calc_usage_normalized(tp_list):
                          "Average Usage of Tags, normalized"])
         for tp in tp_list:
             writer.writerow([tp.number,
-                             "{0:.2f}".format(tp.getUsageNormalized())])
+                             display(tp.getUsageNormalized())])
     logging.info("File written: %s" % (filename))
 
 
