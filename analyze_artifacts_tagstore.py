@@ -370,11 +370,15 @@ def calc_tags_per_item(tp_list):
             writer.writerow([tp.number,
                             display(tp.tags_per_item),
                             display(tp.tags_per_item_stddev),
-                            fivenumbers.get('min'),
-                            fivenumbers.get('q1'),
-                            fivenumbers.get('med'),
-                            fivenumbers.get('q3'),
-                            fivenumbers.get('max')])
+                            # in case you're wondering why this looks as ugly:
+                            # there doesn't seem to be a way to use a list in
+                            # here. So we have to use functions or variables
+                            # every. single. time.
+                            display(fivenumbers.get('min')),
+                            display(fivenumbers.get('q1')),
+                            display(fivenumbers.get('med')),
+                            display(fivenumbers.get('q3')),
+                            display(fivenumbers.get('max'))])
             figure()
             boxplot(tp.number_tags_on_item_list)
             savefig(filename_plot + str(tp.number))
@@ -459,11 +463,11 @@ def calc_tag_length(tp_list):
             writer.writerow([tp.number,
                             display(tp.getAverageTagLength()),
                             display(tp.tag_length_list.std()),
-                            fivenumbers.get('min'),
-                            fivenumbers.get('q1'),
-                            fivenumbers.get('med'),
-                            fivenumbers.get('q3'),
-                            fivenumbers.get('max')])
+                            display(fivenumbers.get('min')),
+                            display(fivenumbers.get('q1')),
+                            display(fivenumbers.get('med')),
+                            display(fivenumbers.get('q3')),
+                            display(fivenumbers.get('max'))])
             figure()
             boxplot(tp.tag_length_list)
             savefig(filename_plot + str(tp.number))
