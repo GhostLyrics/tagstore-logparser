@@ -380,13 +380,13 @@ def calc_tags_per_item(tp_list):
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
             figure()
-            boxplot(tp.number_tags_on_item_list)
+            boxplot(tp.number_tags_on_item_list)  # TODO: axis description
             savefig(filename_plot + str(tp.number))
             logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
 
     # run global
     global_fivenumbers = fivenum(global_array)
-    with open((filename + '_global' + file_extension), 'wb') as f:
+    with open(('global_' + filename), 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Avg. Tags/Item',
                          'Standard Deviation',
@@ -402,10 +402,11 @@ def calc_tags_per_item(tp_list):
                          display(global_fivenumbers.get('med')),
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
+    logging.info("File written: %s" % ('global_' + filename))
     figure()
-    boxplot(global_array)
-    savefig(filename_plot + '_global')
-    logging.debug("Plot drawn: %s" % (filename_plot + '_global'))
+    boxplot(global_array)  # TODO: axis description
+    savefig('global_' + filename_plot)
+    logging.debug("Plot drawn: %s" % ('global_' + filename_plot))
     logging.info("File written: %s" % (filename))
 
 
@@ -469,7 +470,7 @@ def calc_tag_length(tp_list):
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
             figure()
-            boxplot(tp.tag_length_list)
+            boxplot(tp.tag_length_list)  # TODO: axis description
             savefig(filename_plot + str(tp.number))
             logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
     logging.info("File written: %s" % (filename))
