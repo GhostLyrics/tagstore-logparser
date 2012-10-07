@@ -1,3 +1,4 @@
+ARCHIVE_DIRECTORY=~/Desktop/
 FILESCHEME=store*.tgs
 FILESCHEME_MINIMAL=ministore*.tgs
 FILESCHEME_ALL=*.tgs
@@ -20,4 +21,4 @@ huge: clean
 	$(SCRIPT) -v $(FILESCHEME_ALL)
 
 archive: huge
-	-zip ~/Archive.zip *.csv *.png
+	-zip $(ARCHIVE_DIRECTORY)Archive.zip *.csv *.png
