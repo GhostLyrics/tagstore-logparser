@@ -390,8 +390,10 @@ def calc_tags_per_item(tp_list):
                             display(fivenumbers.get('med')),
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
-            boxplot_with_labels(tp.number_tags_on_item_list, 'TODO', 'TODO',
-                                current)  # TODO: labels
+            boxplot_with_labels(tp.number_tags_on_item_list,
+                                'Testperson #' + str(tp.number),
+                                'Tags per Item',
+                                current)
             logging.debug('Plot drawn: %s' % (current))
     logging.info("File written: %s" % (file_tags_per_item + '_summary'))
 
@@ -414,8 +416,10 @@ def calc_tags_per_item(tp_list):
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
     logging.info("File written: %s" % (file_tags_per_item + '_global'))
-    boxplot_with_labels(global_array, 'TODO', 'TODO',
-                        file_tags_per_item + '_global')  # TODO: labels
+    boxplot_with_labels(global_array,
+                        'All Testpersons',
+                        'Tags per Item',
+                        file_tags_per_item + '_global')
     logging.debug("Plot drawn: %s" % (file_tags_per_item + '_global'))
 
 
@@ -479,8 +483,9 @@ def calc_tag_length(tp_list):
                             display(fivenumbers.get('med')),
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
-            boxplot_with_labels(tp.tag_length_list, 'TODO', 'TODO', current)
-            # TODO: labels
+            boxplot_with_labels(tp.tag_length_list,
+                                'Testperson #' + str(tp.number),
+                                'Tag Length', current)
             logging.debug('Plot drawn: %s' % (current))
     logging.info("File written: %s" % (file_tag_length + '_summary'))
 
@@ -503,8 +508,8 @@ def calc_tag_length(tp_list):
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
     logging.info('File written: %s' % (file_tag_length + '_global'))
-    boxplot_with_labels(global_array, 'TODO', 'TODO',
-                        file_tag_length + '_global')  # TODO: labels
+    boxplot_with_labels(global_array, 'All Testpersons', 'Tag Length',
+                        file_tag_length + '_global')
     logging.debug('Plot drawn: %s' % (file_tag_length + '_global'))
 
 
@@ -536,8 +541,10 @@ def calc_tag_variety(tp_list):
                     global_dictionary.update(
                         {tag: tp.unique_tag_dict.get(tag)})
         logging.debug("File written: %s" % (current))
-        boxplot_with_labels(local_array, 'TODO', 'TODO', current)
-        # TODO: labels
+        boxplot_with_labels(local_array,
+                            'Testperson #' + str(tp.number),
+                            'Tag Variety',
+                            current)
         logging.debug('Plot drawn: %s' % (current))
     logging.info("Section written: %s" % (file_tag_variety))
 
@@ -553,7 +560,9 @@ def calc_tag_variety(tp_list):
             writer.writerow([tag, global_dictionary.get(tag)])
             global_array.append(global_dictionary.get(tag))
     logging.debug('File written: %s' % (file_tag_variety + '_global'))
-    boxplot_with_labels(global_array, 'TODO', 'TODO',
+    boxplot_with_labels(global_array,
+                        'All Testpersons',
+                        'Tag Variety',
                         file_tag_variety + '_global')
 
 
@@ -582,7 +591,9 @@ def calc_tag_reuse(tp_list):
                         {number: tp.reuse_dict.get(number)})
         logging.debug("File written: %s" % (
             file_tag_reuse + '_' + str(tp.number)))
-        boxplot_with_labels(local_array, 'TODO', 'TODO',
+        boxplot_with_labels(local_array,
+                            'Testperson #' + str(tp.number),
+                            'Tag Count per Item',
                             file_tag_reuse + '_' + str(tp.number))
         logging.debug('Plot drawn: %s' % (file_tag_reuse +
                                           '_' + str(tp.number)))
