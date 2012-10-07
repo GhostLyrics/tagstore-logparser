@@ -55,7 +55,7 @@ file_single_usage = "single_usage"
 file_usage_normalized = "usage_normalized"
 
 file_tag_variety = "tag_variety"
-file_template_tag_reuse = "tag_reuse"
+file_tag_reuse = "tag_reuse"
 
 ## ======================================================================= ##
 ##                                                                         ##
@@ -538,18 +538,18 @@ def calc_tag_variety(tp_list):
 def calc_tag_reuse(tp_list):
     for tp in tp_list:
         # init
-        filename = file_template_tag_reuse + str(tp.number) + ext
         tp.buildReuseDictionary()
         reuse_dict = sorted(tp.reuse_dict, reverse=True)
 
         # run
-        with open(filename, "wb") as f:
+        with open(file_tag_reuse + '_' + str(tp.number) + ext, "wb") as f:
             writer = csv.writer(f)
             writer.writerow(["Tag Count per Item", "Occurrence"])
             for number in reuse_dict:
                 writer.writerow([number, tp.reuse_dict.get(number)])
-        logging.debug("File written: %s" % (filename))
-    logging.info("Section written: %s" % (file_template_tag_reuse))
+        logging.debug("File written: %s" % (
+            file_tag_reuse + '_' + str(tp.number)))
+    logging.info("Section written: %s" % (file_tag_reuse))
 
 
 def calc_tag_single_usage(tp_list):
