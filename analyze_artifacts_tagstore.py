@@ -54,7 +54,7 @@ file_tag_length = "tag_length"
 file_single_usage = "single_usage"
 file_usage_normalized = "usage_normalized"
 
-file_template_tag_variety = "tag_variety"
+file_tag_variety = "tag_variety"
 file_template_tag_reuse = "tag_reuse"
 
 ## ======================================================================= ##
@@ -514,24 +514,25 @@ def calc_tag_length(tp_list):
 def calc_tag_variety(tp_list):
     for tp in tp_list:
         # init
-        filename = file_template_tag_variety + str(tp.number) + ext
         tp.buildTagDictionary()  # build dict to sort for output
+        local_array = []
         tag_dict = sorted(tp.unique_tag_dict,
                           key=tp.unique_tag_dict.get,
                           reverse=True)
-        local_array = []
 
         # run
-        with open(filename, "wb") as f:
+        with open(file_tag_variety + '_' + str(tp.number) + ext, "wb") as f:
             writer = csv.writer(f)
             writer.writerow(["Tag (converted to lowercase)", "Usage Count"])
             for tag in tag_dict:
                 writer.writerow([tag, tp.unique_tag_dict.get(tag)])
                 local_array.append(tp.unique_tag_dict.get(tag))
-        logging.debug("File written: %s" % (filename))
-        boxplot_with_labels(local_array, 'TODO', 'TODO', 'TODO')
+        logging.debug("File written: %s" % (
+            file_tag_variety + '_' + str(tp.number)))
+        boxplot_with_labels(local_array, 'TODO', 'TODO',
+                            file_tag_variety + '_' + str(tp.number))
         # TODO: labels
-    logging.info("Section written: %s" % (file_template_tag_variety))
+    logging.info("Section written: %s" % (file_tag_variety))
 
 
 def calc_tag_reuse(tp_list):
