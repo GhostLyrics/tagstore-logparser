@@ -230,7 +230,7 @@ def display(float_value):
 
 
 def boxplot_with_labels(array, x_axis_label, y_axis_label, filename):
-    """x"""
+    """Create labeled boxplots in one step"""
     figure()
     boxplot(array)
     xticks([1], [x_axis_label])
