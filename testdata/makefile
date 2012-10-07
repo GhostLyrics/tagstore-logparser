@@ -4,7 +4,7 @@ FILESCHEME_MINIMAL=ministore*.tgs
 FILESCHEME_ALL=*.tgs
 SCRIPT=../analyze_artifacts_tagstore.py
 
-.PHONY: clean standard minimal huge quiet
+.PHONY: clean standard minimal huge
 
 clean:
 	-rm *.csv 
