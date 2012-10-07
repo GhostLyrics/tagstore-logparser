@@ -194,16 +194,21 @@ class testperson:
 
     def getUsageNormalized(self):
         # init
-        mean_value = 0
-        sum_usage = 0
-        normalized_value = 0
+        #mean_value = 0
+        #sum_usage = 0
+        #normalized_value = 0
         self.buildTagDictionary()
 
         # run
+        self.usage_array = []
         for tag in self.unique_tag_dict:
-            sum_usage = sum_usage + self.unique_tag_dict.get(tag)
-        mean_value = sum_usage / float(len(self.unique_tag_dict))
-        normalized_value = mean_value / self.item_count
+            self.usage_array.append(float(self.unique_tag_dict.get(tag)) /
+                                    float(self.item_count))
+            #sum_usage = sum_usage + self.unique_tag_dict.get(tag)
+        #mean_value = sum_usage / float(len(self.unique_tag_dict))
+        #normalized_value = mean_value / self.item_count
+        normalized_value = mean(self.usage_array)
+        self.usage_std = std(self.usage_array)
         return normalized_value
 
     def __repr__(self):
@@ -639,15 +644,24 @@ def calc_tag_single_usage(tp_list):
 def calc_usage_normalized(tp_list):
     # init
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
-
+    global_array = []
     # run
     with open(file_usage_normalized + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
-                         "Average Usage of Tags, normalized"])
+                         "Average Usage of Tags, normalized",
+                         'Standard Deviation'])
         for tp in tp_list:
             writer.writerow([tp.number,
-                             display(tp.getUsageNormalized())])
+                             display(tp.getUsageNormalized()),
+                             display(tp.usage_std)])
+            boxplot_with_labels(tp.usage_array,
+                                'Normalized Usage',
+                                'Testperson #' + str(tp.number),
+                                file_usage_normalized + str(tp.number))
+            logging.debug('Plot drawn: %s' % (file_usage_normalized +
+                                              str(tp.number)))
+        logging.debug('File written: %s' % (file_usage_normalized))
     logging.info("Section complete: %s" % (file_usage_normalized))
 
 
