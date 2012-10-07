@@ -46,6 +46,7 @@ from collections import defaultdict
 
 #filenames
 ext = ".csv"  # file extension for comma separated values
+              # boxplots use their default file extension 'png'
 
 file_sum_tags = "sum_tags"
 file_sum_items = "sum_items"
@@ -53,7 +54,6 @@ file_tags_per_item = "tags_per_item"
 file_tag_length = "tag_length"
 file_single_usage = "single_usage"
 file_usage_normalized = "usage_normalized"
-
 file_tag_variety = "tag_variety"
 file_tag_reuse = "tag_reuse"
 
@@ -121,8 +121,7 @@ class testperson:
 
         # encoding all tags to unicode
         for tag in tag_list:
-            self.tag_list.append((tag.encode('utf-8')).lower())
-            # conversation to lower case to simplify later comparison
+            self.tag_list.append(tag.lower().encode('utf-8'))
 
     def getAverageTagLength(self):
         # init
@@ -189,8 +188,7 @@ class testperson:
         for tag in self.unique_tag_dict:
             if self.unique_tag_dict.get(tag) is 1:
                 single_usage_tag_counter += 1
-        percentage = (float(len(self.unique_tag_dict))  # not sure
-                      / 100 * single_usage_tag_counter)  # I hope this is right
+        percentage = float(single_usage_tag_counter) / float(len(self.unique_tag_dict)) * 100
         return percentage
 
     def getUsageNormalized(self):
@@ -512,27 +510,47 @@ def calc_tag_length(tp_list):
 
 
 def calc_tag_variety(tp_list):
+    # init global
+    global_dictionary = {}
+
     for tp in tp_list:
-        # init
+        # init local
         tp.buildTagDictionary()  # build dict to sort for output
         local_array = []
         tag_dict = sorted(tp.unique_tag_dict,
                           key=tp.unique_tag_dict.get,
                           reverse=True)
 
-        # run
+        # run for individual test persons
         with open(file_tag_variety + '_' + str(tp.number) + ext, "wb") as f:
             writer = csv.writer(f)
             writer.writerow(["Tag (converted to lowercase)", "Usage Count"])
             for tag in tag_dict:
                 writer.writerow([tag, tp.unique_tag_dict.get(tag)])
                 local_array.append(tp.unique_tag_dict.get(tag))
+                if tag in global_dictionary:
+                    global_dictionary.update(
+                        {tag: (tp.unique_tag_dict.get(tag) +
+                               global_dictionary.get(tag))})
+                else:
+                    global_dictionary.update(
+                        {tag: tp.unique_tag_dict.get(tag)})
         logging.debug("File written: %s" % (
             file_tag_variety + '_' + str(tp.number)))
         boxplot_with_labels(local_array, 'TODO', 'TODO',
                             file_tag_variety + '_' + str(tp.number))
-        # TODO: labels
+        # TODO: labelss
     logging.info("Section written: %s" % (file_tag_variety))
+
+    # run global
+    # global_dictionary = sorted(global_dictionary,
+    #                            key=global_dictionary.get,
+    #                            reverse=True)
+    with open(file_tag_variety + '_global' + ext, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Tag (converted to lowercase)', 'Usage Count'])
+        for tag in global_dictionary:
+            writer.writerow([tag, global_dictionary.get(tag)])
 
 
 def calc_tag_reuse(tp_list):
