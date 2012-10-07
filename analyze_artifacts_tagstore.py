@@ -421,30 +421,28 @@ def calc_tags_per_item(tp_list):
 
 def calc_sum_tags(tp_list):
     # init
-    filename = file_sum_tags + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
-    with open(filename, 'wb') as f:
+    with open(file_sum_tags + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number", "Tag Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.tag_count])
-    logging.info("File written: %s" % (filename))
+    logging.info("File written: %s" % (file_sum_tags))
 
 
 def calc_sum_items(tp_list):
     # init
-    filename = file_sum_items + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
-    with open(filename, 'wb') as f:
+    with open(file_sum_items + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number", "Item Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.item_count])
-    logging.info("File written: %s" % (filename))
+    logging.info("File written: %s" % (file_sum_items))
 
 
 def calc_tag_length(tp_list):
@@ -516,6 +514,7 @@ def calc_tag_variety(tp_list):
 
     for tp in tp_list:
         # init local
+        current = file_tag_variety + '_' + str(tp.number)
         tp.buildTagDictionary()  # build dict to sort for output
         local_array = []
         tag_dict = sorted(tp.unique_tag_dict,
@@ -523,7 +522,7 @@ def calc_tag_variety(tp_list):
                           reverse=True)
 
         # run for individual test persons
-        with open(file_tag_variety + '_' + str(tp.number) + ext, "wb") as f:
+        with open(current + ext, "wb") as f:
             writer = csv.writer(f)
             writer.writerow(["Tag (converted to lowercase)", "Usage Count"])
             for tag in tag_dict:
@@ -536,11 +535,10 @@ def calc_tag_variety(tp_list):
                 else:
                     global_dictionary.update(
                         {tag: tp.unique_tag_dict.get(tag)})
-        logging.debug("File written: %s" % (
-            file_tag_variety + '_' + str(tp.number)))
-        boxplot_with_labels(local_array, 'TODO', 'TODO',
-                            file_tag_variety + '_' + str(tp.number))
-        # TODO: labelss
+        logging.debug("File written: %s" % (current))
+        boxplot_with_labels(local_array, 'TODO', 'TODO', current)
+        # TODO: labels
+        logging.debug('Plot drawn: %s' % (current))
     logging.info("Section written: %s" % (file_tag_variety))
 
     # run global
@@ -552,12 +550,16 @@ def calc_tag_variety(tp_list):
         writer.writerow(['Tag (converted to lowercase)', 'Usage Count'])
         for tag in listing:
             writer.writerow([tag, global_dictionary.get(tag)])
+    logging.debug('File written: %s' % (file_tag_variety + '_global'))
 
 
 def calc_tag_reuse(tp_list):
+    # init global
+    global_dictionary = {}
     for tp in tp_list:
         # init
         tp.buildReuseDictionary()
+        local_array = []
         reuse_dict = sorted(tp.reuse_dict, reverse=True)
 
         # run
@@ -566,9 +568,32 @@ def calc_tag_reuse(tp_list):
             writer.writerow(["Tag Count per Item", "Occurrence"])
             for number in reuse_dict:
                 writer.writerow([number, tp.reuse_dict.get(number)])
+                local_array.append(tp.reuse_dict.get(number))
+                if number in global_dictionary:
+                    global_dictionary.update(
+                        {number: (tp.reuse_dict.get(number) +
+                                  global_dictionary.get(number))})
+                else:
+                    global_dictionary.update(
+                        {number: tp.reuse_dict.get(number)})
         logging.debug("File written: %s" % (
             file_tag_reuse + '_' + str(tp.number)))
+        boxplot_with_labels(local_array, 'TODO', 'TODO',
+                            file_tag_reuse + '_' + str(tp.number))
+        logging.debug('Plot drawn: %s' % (file_tag_reuse +
+                                          '_' + str(tp.number)))
     logging.info("Section written: %s" % (file_tag_reuse))
+
+    # run global
+    listing = sorted(global_dictionary,
+                     key=global_dictionary.get,
+                     reverse=True)
+    with open(file_tag_reuse + '_global' + ext, 'wb') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Tag Count per Item', 'Occurrence'])
+        for number in listing:
+            writer.writerow([number, global_dictionary.get(number)])
+    logging.debug('File written: %s' % (file_tag_reuse + '_global'))
 
 
 def calc_tag_single_usage(tp_list):
