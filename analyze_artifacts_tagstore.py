@@ -395,7 +395,7 @@ def calc_tags_per_item(tp_list):
                                 'Tags per Item',
                                 current)
             logging.debug('Plot drawn: %s' % (current))
-    logging.info("File written: %s" % (file_tags_per_item + '_summary'))
+    logging.debug("File written: %s" % (file_tags_per_item + '_summary'))
 
     # run global
     global_fivenumbers = fivenum(global_array)
@@ -415,12 +415,13 @@ def calc_tags_per_item(tp_list):
                          display(global_fivenumbers.get('med')),
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
-    logging.info("File written: %s" % (file_tags_per_item + '_global'))
+    logging.debug("File written: %s" % (file_tags_per_item + '_global'))
     boxplot_with_labels(global_array,
                         'All Testpersons',
                         'Tags per Item',
                         file_tags_per_item + '_global')
     logging.debug("Plot drawn: %s" % (file_tags_per_item + '_global'))
+    logging.info('Section complete: %s' % file_tags_per_item)
 
 
 def calc_sum_tags(tp_list):
@@ -433,7 +434,7 @@ def calc_sum_tags(tp_list):
         writer.writerow(["TP Number", "Tag Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.tag_count])
-    logging.info("File written: %s" % (file_sum_tags))
+    logging.info("Section complete: %s" % (file_sum_tags))
 
 
 def calc_sum_items(tp_list):
@@ -446,7 +447,7 @@ def calc_sum_items(tp_list):
         writer.writerow(["TP Number", "Item Count"])
         for tp in tp_list:
             writer.writerow([tp.number, tp.item_count])
-    logging.info("File written: %s" % (file_sum_items))
+    logging.info("Section complete: %s" % (file_sum_items))
 
 
 def calc_tag_length(tp_list):
@@ -487,7 +488,7 @@ def calc_tag_length(tp_list):
                                 'Testperson #' + str(tp.number),
                                 'Tag Length', current)
             logging.debug('Plot drawn: %s' % (current))
-    logging.info("File written: %s" % (file_tag_length + '_summary'))
+    logging.debug("File written: %s" % (file_tag_length + '_summary'))
 
     # run global
     global_fivenumbers = fivenum(global_array)
@@ -507,10 +508,11 @@ def calc_tag_length(tp_list):
                          display(global_fivenumbers.get('med')),
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
-    logging.info('File written: %s' % (file_tag_length + '_global'))
+    logging.debug('File written: %s' % (file_tag_length + '_global'))
     boxplot_with_labels(global_array, 'All Testpersons', 'Tag Length',
                         file_tag_length + '_global')
     logging.debug('Plot drawn: %s' % (file_tag_length + '_global'))
+    logging.info('Section complete: %s' % file_tag_length)
 
 
 def calc_tag_variety(tp_list):
@@ -546,7 +548,6 @@ def calc_tag_variety(tp_list):
                             'Tag Variety',
                             current)
         logging.debug('Plot drawn: %s' % (current))
-    logging.info("Section written: %s" % (file_tag_variety))
 
     # run global
     global_array = []
@@ -564,6 +565,8 @@ def calc_tag_variety(tp_list):
                         'All Testpersons',
                         'Tag Variety',
                         file_tag_variety + '_global')
+    logging.debug('Plot drawn: %s' % (file_tag_variety + '_global'))
+    logging.info("Section complete: %s" % (file_tag_variety))
 
 
 def calc_tag_reuse(tp_list):
@@ -597,9 +600,9 @@ def calc_tag_reuse(tp_list):
                             file_tag_reuse + '_' + str(tp.number))
         logging.debug('Plot drawn: %s' % (file_tag_reuse +
                                           '_' + str(tp.number)))
-    logging.info("Section written: %s" % (file_tag_reuse))
 
     # run global
+    global_array = []
     listing = sorted(global_dictionary,
                      key=global_dictionary.get,
                      reverse=True)
@@ -608,7 +611,14 @@ def calc_tag_reuse(tp_list):
         writer.writerow(['Tag Count per Item', 'Occurrence'])
         for number in listing:
             writer.writerow([number, global_dictionary.get(number)])
+            global_array.append(global_dictionary.get(number))
     logging.debug('File written: %s' % (file_tag_reuse + '_global'))
+    boxplot_with_labels(global_array,
+                        'All Testpersons',
+                        'Tag Count per Item',
+                        file_tag_reuse + '_global')
+    logging.debug('Plot drawn: %s' % (file_tag_reuse + '_global'))
+    logging.info("Section complete: %s" % (file_tag_reuse))
 
 
 def calc_tag_single_usage(tp_list):
@@ -623,7 +633,7 @@ def calc_tag_single_usage(tp_list):
         for tp in tp_list:
             writer.writerow([tp.number,
                             display(tp.getPercentageOfSingleTags())])
-    logging.info("File written: %s" % (file_single_usage))
+    logging.info("Section complete: %s" % (file_single_usage))
 
 
 def calc_usage_normalized(tp_list):
@@ -638,7 +648,7 @@ def calc_usage_normalized(tp_list):
         for tp in tp_list:
             writer.writerow([tp.number,
                              display(tp.getUsageNormalized())])
-    logging.info("File written: %s" % (file_usage_normalized))
+    logging.info("Section complete: %s" % (file_usage_normalized))
 
 
 def write_csv(tp_list):
