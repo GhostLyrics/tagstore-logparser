@@ -188,7 +188,8 @@ class testperson:
         for tag in self.unique_tag_dict:
             if self.unique_tag_dict.get(tag) is 1:
                 single_usage_tag_counter += 1
-        percentage = float(single_usage_tag_counter) / float(len(self.unique_tag_dict)) * 100
+        percentage = (float(single_usage_tag_counter) /
+                      float(len(self.unique_tag_dict)) * 100)
         return percentage
 
     def getUsageNormalized(self):
@@ -543,13 +544,13 @@ def calc_tag_variety(tp_list):
     logging.info("Section written: %s" % (file_tag_variety))
 
     # run global
-    # global_dictionary = sorted(global_dictionary,
-    #                            key=global_dictionary.get,
-    #                            reverse=True)
+    listing = sorted(global_dictionary,
+                     key=global_dictionary.get,
+                     reverse=True)
     with open(file_tag_variety + '_global' + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Tag (converted to lowercase)', 'Usage Count'])
-        for tag in global_dictionary:
+        for tag in listing:
             writer.writerow([tag, global_dictionary.get(tag)])
 
 
