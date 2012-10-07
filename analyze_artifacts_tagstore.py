@@ -29,7 +29,7 @@ import codecs     # fixing UTF-8 issues
 ## maths
 from numpy import array, std, sum, median, min, max, mean
 from scipy.stats import scoreatpercentile
-from pylab import boxplot, savefig, figure
+from pylab import boxplot, savefig, figure, xticks, ylabel
 
 ## globbing on Windows
 from glob import glob
@@ -45,7 +45,7 @@ import pdb
 from collections import defaultdict
 
 #filenames
-file_extension = ".csv"
+ext = ".csv"  # file extension for comma separated values
 
 file_sum_tags = "sum_tags"
 file_sum_items = "sum_items"
@@ -121,7 +121,8 @@ class testperson:
 
         # encoding all tags to unicode
         for tag in tag_list:
-            self.tag_list.append(tag.encode('utf-8'))
+            self.tag_list.append((tag.encode('utf-8')).lower())
+            # conversation to lower case to simplify later comparison
 
     def getAverageTagLength(self):
         # init
@@ -227,6 +228,15 @@ def fivenum(input_list):
 def display(float_value):
     """Display nicer values and generally save typing"""
     return "{0:.2f}".format(float_value)
+
+
+def boxplot_with_labels(array, x_axis_label, y_axis_label, filename):
+    """x"""
+    figure()
+    boxplot(array)
+    xticks([1], [x_axis_label])
+    ylabel(y_axis_label)
+    savefig(filename)
 
 
 def handle_logging():
@@ -345,8 +355,7 @@ def traverse_dataset(dataset, tp_list):
 
 def calc_tags_per_item(tp_list):
     # init
-    filename = file_tags_per_item + file_extension
-    filename_plot = file_tags_per_item + '_plot'
+    filename = file_tags_per_item + ext
     tp_list = sorted(tp_list,
                      key=lambda testperson: testperson.tags_per_item,
                      reverse=True)
@@ -368,6 +377,7 @@ def calc_tags_per_item(tp_list):
                          "Maximum"])
         for tp in tp_list:
             # init
+            current = file_tags_per_item + str(tp.number)  # used for output
             global_array.append(tp.tags_per_item)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
 
@@ -384,10 +394,9 @@ def calc_tags_per_item(tp_list):
                             display(fivenumbers.get('med')),
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
-            figure()
-            boxplot(tp.number_tags_on_item_list)  # TODO: axis description
-            savefig(filename_plot + str(tp.number))
-            logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
+            boxplot_with_labels(tp.number_tags_on_item_list, 'TODO', 'TODO',
+                                current)  # TODO: labels
+            logging.debug('Plot drawn: %s' % (current))
     logging.info("File written: %s" % (filename))
 
     # run global
@@ -409,15 +418,14 @@ def calc_tags_per_item(tp_list):
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
     logging.info("File written: %s" % ('global_' + filename))
-    figure()
-    boxplot(global_array)  # TODO: axis description
-    savefig('global_' + filename_plot)
-    logging.debug("Plot drawn: %s" % ('global_' + filename_plot))
+    boxplot_with_labels(global_array, 'TODO', 'TODO',
+                        file_tags_per_item + '_global')  # TODO: labels
+    logging.debug("Plot drawn: %s" % (file_tags_per_item + '_global'))
 
 
 def calc_sum_tags(tp_list):
     # init
-    filename = file_sum_tags + file_extension
+    filename = file_sum_tags + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
@@ -431,7 +439,7 @@ def calc_sum_tags(tp_list):
 
 def calc_sum_items(tp_list):
     # init
-    filename = file_sum_items + file_extension
+    filename = file_sum_items + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
@@ -445,8 +453,6 @@ def calc_sum_items(tp_list):
 
 def calc_tag_length(tp_list):
     # init
-    filename = file_tag_length + file_extension
-    filename_plot = file_tag_length + '_plot'
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # init global
@@ -454,7 +460,7 @@ def calc_tag_length(tp_list):
                        # for all testpersons combined
 
     # run for test person
-    with open(filename, 'wb') as f:
+    with open(file_tags_per_item + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
                          "Avg. Tag Length",
@@ -466,6 +472,7 @@ def calc_tag_length(tp_list):
                          "Maximum"])
         for tp in tp_list:
             # init
+            current = file_tag_length + '_' + str(tp.number)  # used for output
             tp.buildTagLengthList()
             for tag_length in tp.tag_length_list:
                 global_array.append(tag_length)
@@ -480,15 +487,14 @@ def calc_tag_length(tp_list):
                             display(fivenumbers.get('med')),
                             display(fivenumbers.get('q3')),
                             display(fivenumbers.get('max'))])
-            figure()
-            boxplot(tp.tag_length_list)  # TODO: axis description
-            savefig(filename_plot + str(tp.number))
-            logging.debug('Plot drawn: %s' % (filename_plot + str(tp.number)))
-    logging.info("File written: %s" % (filename))
+            boxplot_with_labels(tp.tag_length_list, 'TODO', 'TODO', current)
+            # TODO: labels
+            logging.debug('Plot drawn: %s' % (current))
+    logging.info("File written: %s" % (file_tag_length))
 
     # run global
     global_fivenumbers = fivenum(global_array)
-    with open(('global_' + filename), 'wb') as f:
+    with open((file_tag_length + '_global' + ext), 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Avg. Tag Length',
                          'Standard Deviation',
@@ -504,36 +510,38 @@ def calc_tag_length(tp_list):
                          display(global_fivenumbers.get('med')),
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
-    logging.info('File written: %s' % ('global_' + filename))
-    figure()
-    boxplot(global_array)  # TODO. axis description
-    savefig('global_' + filename_plot)
-    logging.debug('Plot drawn: %s' % ('global_' + filename_plot))
+    logging.info('File written: %s' % (file_tag_length + '_global'))
+    boxplot_with_labels(global_array, 'TODO', 'TODO',
+                        file_tag_length + '_global')  # TODO: labels
+    logging.debug('Plot drawn: %s' % (file_tag_length + '_global'))
 
 
 def calc_tag_variety(tp_list):
     for tp in tp_list:
         # init
-        filename = file_template_tag_variety + str(tp.number) + file_extension
+        filename = file_template_tag_variety + str(tp.number) + ext
         tp.buildTagDictionary()  # build dict to sort for output
         tag_dict = sorted(tp.unique_tag_dict,
                           key=tp.unique_tag_dict.get,
                           reverse=True)
+        local_array = []
 
         # run
         with open(filename, "wb") as f:
             writer = csv.writer(f)
-            writer.writerow(["Tag", "Usage Count"])
+            writer.writerow(["Tag (converted to lowercase)", "Usage Count"])
             for tag in tag_dict:
                 writer.writerow([tag, tp.unique_tag_dict.get(tag)])
+                local_array.append(tp.unique_tag_dict.get(tag))
         logging.debug("File written: %s" % (filename))
+        boxplot_with_labels(local_array, 'TODO', 'TODO', 'TODO')  # TODO: labels
     logging.info("Section written: %s" % (file_template_tag_variety))
 
 
 def calc_tag_reuse(tp_list):
     for tp in tp_list:
         # init
-        filename = file_template_tag_reuse + str(tp.number) + file_extension
+        filename = file_template_tag_reuse + str(tp.number) + ext
         tp.buildReuseDictionary()
         reuse_dict = sorted(tp.reuse_dict, reverse=True)
 
@@ -549,7 +557,7 @@ def calc_tag_reuse(tp_list):
 
 def calc_tag_single_usage(tp_list):
     # init
-    filename = file_single_usage + file_extension
+    filename = file_single_usage + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
@@ -565,7 +573,7 @@ def calc_tag_single_usage(tp_list):
 
 def calc_usage_normalized(tp_list):
     # init
-    filename = file_usage_normalized + file_extension
+    filename = file_usage_normalized + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
