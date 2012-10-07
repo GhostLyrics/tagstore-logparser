@@ -49,7 +49,7 @@ ext = ".csv"  # file extension for comma separated values
 
 file_sum_tags = "sum_tags"
 file_sum_items = "sum_items"
-file_tags_per_item = "tag_per_item"
+file_tags_per_item = "tags_per_item"
 file_tag_length = "tag_length"
 file_single_usage = "single_usage"
 file_usage_normalized = "usage_normalized"
@@ -355,17 +355,14 @@ def traverse_dataset(dataset, tp_list):
 
 def calc_tags_per_item(tp_list):
     # init
-    filename = file_tags_per_item + ext
     tp_list = sorted(tp_list,
                      key=lambda testperson: testperson.tags_per_item,
                      reverse=True)
-
-    # init global
     global_array = []  # contains all the values in order to generate a boxplot
                        # for all testpersons combined
 
     # run per testperson
-    with open(filename, 'wb') as f:
+    with open(file_tags_per_item + '_summary' + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
                          "Avg. Tags/Item",
@@ -377,7 +374,7 @@ def calc_tags_per_item(tp_list):
                          "Maximum"])
         for tp in tp_list:
             # init
-            current = file_tags_per_item + str(tp.number)  # used for output
+            current = file_tags_per_item + '_' + str(tp.number)  # file names
             global_array.append(tp.tags_per_item)
             fivenumbers = fivenum(tp.number_tags_on_item_list)
 
@@ -397,11 +394,11 @@ def calc_tags_per_item(tp_list):
             boxplot_with_labels(tp.number_tags_on_item_list, 'TODO', 'TODO',
                                 current)  # TODO: labels
             logging.debug('Plot drawn: %s' % (current))
-    logging.info("File written: %s" % (filename))
+    logging.info("File written: %s" % (file_tags_per_item + '_summary'))
 
     # run global
     global_fivenumbers = fivenum(global_array)
-    with open(('global_' + filename), 'wb') as f:
+    with open((file_tags_per_item + '_global' + ext), 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Avg. Tags/Item',
                          'Standard Deviation',
@@ -417,7 +414,7 @@ def calc_tags_per_item(tp_list):
                          display(global_fivenumbers.get('med')),
                          display(global_fivenumbers.get('q3')),
                          display(global_fivenumbers.get('max'))])
-    logging.info("File written: %s" % ('global_' + filename))
+    logging.info("File written: %s" % (file_tags_per_item + '_global'))
     boxplot_with_labels(global_array, 'TODO', 'TODO',
                         file_tags_per_item + '_global')  # TODO: labels
     logging.debug("Plot drawn: %s" % (file_tags_per_item + '_global'))
@@ -454,13 +451,11 @@ def calc_sum_items(tp_list):
 def calc_tag_length(tp_list):
     # init
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
-
-    # init global
     global_array = []  # contains all the values in order to generate a boxplot
                        # for all testpersons combined
 
     # run for test person
-    with open(file_tags_per_item + ext, 'wb') as f:
+    with open(file_tag_length + '_summary' + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
                          "Avg. Tag Length",
@@ -472,7 +467,7 @@ def calc_tag_length(tp_list):
                          "Maximum"])
         for tp in tp_list:
             # init
-            current = file_tag_length + '_' + str(tp.number)  # used for output
+            current = file_tag_length + '_' + str(tp.number)  # file names
             tp.buildTagLengthList()
             for tag_length in tp.tag_length_list:
                 global_array.append(tag_length)
@@ -490,7 +485,7 @@ def calc_tag_length(tp_list):
             boxplot_with_labels(tp.tag_length_list, 'TODO', 'TODO', current)
             # TODO: labels
             logging.debug('Plot drawn: %s' % (current))
-    logging.info("File written: %s" % (file_tag_length))
+    logging.info("File written: %s" % (file_tag_length + '_summary'))
 
     # run global
     global_fivenumbers = fivenum(global_array)
@@ -534,7 +529,8 @@ def calc_tag_variety(tp_list):
                 writer.writerow([tag, tp.unique_tag_dict.get(tag)])
                 local_array.append(tp.unique_tag_dict.get(tag))
         logging.debug("File written: %s" % (filename))
-        boxplot_with_labels(local_array, 'TODO', 'TODO', 'TODO')  # TODO: labels
+        boxplot_with_labels(local_array, 'TODO', 'TODO', 'TODO')
+        # TODO: labels
     logging.info("Section written: %s" % (file_template_tag_variety))
 
 
