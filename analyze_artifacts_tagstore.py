@@ -554,34 +554,32 @@ def calc_tag_reuse(tp_list):
 
 def calc_tag_single_usage(tp_list):
     # init
-    filename = file_single_usage + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
-    with open(filename, 'wb') as f:
+    with open(file_single_usage + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
                          "Percentage of Tags with single Occurrence"])
         for tp in tp_list:
             writer.writerow([tp.number,
                             display(tp.getPercentageOfSingleTags())])
-    logging.info("File written: %s" % (filename))
+    logging.info("File written: %s" % (file_single_usage))
 
 
 def calc_usage_normalized(tp_list):
     # init
-    filename = file_usage_normalized + ext
     tp_list = sorted(tp_list, key=lambda testperson: testperson.number)
 
     # run
-    with open(filename, 'wb') as f:
+    with open(file_usage_normalized + ext, 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(["TP Number",
                          "Average Usage of Tags, normalized"])
         for tp in tp_list:
             writer.writerow([tp.number,
                              display(tp.getUsageNormalized())])
-    logging.info("File written: %s" % (filename))
+    logging.info("File written: %s" % (file_usage_normalized))
 
 
 def write_csv(tp_list):
