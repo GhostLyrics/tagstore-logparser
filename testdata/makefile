@@ -8,6 +8,7 @@ SCRIPT=../analyze_artifacts_tagstore.py
 clean:
 	-rm *.csv 
 	-rm *.png
+	-rm Archive.zip
 
 standard: clean
 	$(SCRIPT) -v $(FILESCHEME)
@@ -17,3 +18,6 @@ minimal: clean
 
 huge: clean
 	$(SCRIPT) -v $(FILESCHEME_ALL)
+
+archive: huge
+	-zip ~/Archive.zip *.csv *.png
