@@ -542,6 +542,7 @@ def calc_tag_variety(tp_list):
     logging.info("Section written: %s" % (file_tag_variety))
 
     # run global
+    global_array = []
     listing = sorted(global_dictionary,
                      key=global_dictionary.get,
                      reverse=True)
@@ -550,7 +551,10 @@ def calc_tag_variety(tp_list):
         writer.writerow(['Tag (converted to lowercase)', 'Usage Count'])
         for tag in listing:
             writer.writerow([tag, global_dictionary.get(tag)])
+            global_array.append(global_dictionary.get(tag))
     logging.debug('File written: %s' % (file_tag_variety + '_global'))
+    boxplot_with_labels(global_array, 'TODO', 'TODO',
+                        file_tag_variety + '_global')
 
 
 def calc_tag_reuse(tp_list):
