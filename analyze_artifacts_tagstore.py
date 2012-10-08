@@ -655,6 +655,7 @@ def calc_usage_normalized(tp_list):
             writer.writerow([tp.number,
                              display(tp.getUsageNormalized()),
                              display(tp.usage_std)])
+            global_array.append(tp.getUsageNormalized())
             boxplot_with_labels(tp.usage_array,
                                 'Normalized Usage',
                                 'Testperson #' + str(tp.number),
@@ -662,6 +663,12 @@ def calc_usage_normalized(tp_list):
             logging.debug('Plot drawn: %s' % (file_usage_normalized +
                                               str(tp.number)))
         logging.debug('File written: %s' % (file_usage_normalized))
+        boxplot_with_labels(global_array,
+                            'Normalized Usage',
+                            'All Testpersons',
+                            file_usage_normalized)
+        logging.debug('Plot drawn: %s' % (file_usage_normalized +
+                                          '_global'))
     logging.info("Section complete: %s" % (file_usage_normalized))
 
 
