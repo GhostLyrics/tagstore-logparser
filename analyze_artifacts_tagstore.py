@@ -215,23 +215,23 @@ class testperson:
         return "This is TP %s" % (self.number)
 
 
+def display(float_value):
+    """Display nicer values and generally save typing"""
+    return "{0:.2f}".format(float_value)
+
+
 def fivenum(input_list):
     """Returns a dictionary with the five point summary for a given list"""
     q1 = scoreatpercentile(input_list, 25)
     q3 = scoreatpercentile(input_list, 75)
     md = median(input_list)
 
-    five = {'min': min(input_list),
-            'q1': q1,
-            'med': md,
-            'q3': q3,
-            'max': max(input_list)}
+    five = [display(min(input_list)),
+            display(q1),
+            display(md),
+            display(q3),
+            display(max(input_list))]
     return five
-
-
-def display(float_value):
-    """Display nicer values and generally save typing"""
-    return "{0:.2f}".format(float_value)
 
 
 def boxplot_with_labels(array, x_axis_label, y_axis_label, filename):
@@ -380,21 +380,13 @@ def calc_tags_per_item(tp_list):
             # init
             current = file_tags_per_item + '_' + str(tp.number)  # file names
             global_array.append(tp.tags_per_item)
-            fivenumbers = fivenum(tp.number_tags_on_item_list)
+            stats = [tp.number,
+                     display(tp.tags_per_item),
+                     display(tp.tags_per_item_stddev)] + fivenum(
+                         tp.number_tags_on_item_list)
 
             # run
-            writer.writerow([tp.number,
-                            display(tp.tags_per_item),
-                            display(tp.tags_per_item_stddev),
-                            # in case you're wondering why this looks as ugly:
-                            # there doesn't seem to be a way to use a list in
-                            # here. So we have to use functions or variables
-                            # every. single. time.
-                            display(fivenumbers.get('min')),
-                            display(fivenumbers.get('q1')),
-                            display(fivenumbers.get('med')),
-                            display(fivenumbers.get('q3')),
-                            display(fivenumbers.get('max'))])
+            writer.writerow(stats)
             boxplot_with_labels(tp.number_tags_on_item_list,
                                 'Testperson #' + str(tp.number),
                                 'Tags per Item',
@@ -403,7 +395,8 @@ def calc_tags_per_item(tp_list):
     logging.debug("File written: %s" % (file_tags_per_item + '_summary'))
 
     # run global
-    global_fivenumbers = fivenum(global_array)
+    global_stats = [display(mean(global_array)),
+                    display(std(global_array))] + fivenum(global_array)
     with open((file_tags_per_item + '_global' + ext), 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Avg. Tags/Item',
@@ -413,13 +406,7 @@ def calc_tags_per_item(tp_list):
                          'Median',
                          'Third Quartille',
                          'Maximum'])
-        writer.writerow([display(mean(global_array)),
-                         display((std(global_array))),
-                         display(global_fivenumbers.get('min')),
-                         display(global_fivenumbers.get('q1')),
-                         display(global_fivenumbers.get('med')),
-                         display(global_fivenumbers.get('q3')),
-                         display(global_fivenumbers.get('max'))])
+        writer.writerow(global_stats)
     logging.debug("File written: %s" % (file_tags_per_item + '_global'))
     boxplot_with_labels(global_array,
                         'All Testpersons',
@@ -478,17 +465,13 @@ def calc_tag_length(tp_list):
             tp.buildTagLengthList()
             for tag_length in tp.tag_length_list:
                 global_array.append(tag_length)
-            fivenumbers = fivenum(tp.tag_length_list)
+            stats = [tp.number,
+                     display(tp.getAverageTagLength()),
+                     display(tp.tag_length_list.std())] + fivenum(
+                         tp.tag_length_list)
 
             # run
-            writer.writerow([tp.number,
-                            display(tp.getAverageTagLength()),
-                            display(tp.tag_length_list.std()),
-                            display(fivenumbers.get('min')),
-                            display(fivenumbers.get('q1')),
-                            display(fivenumbers.get('med')),
-                            display(fivenumbers.get('q3')),
-                            display(fivenumbers.get('max'))])
+            writer.writerow(stats)
             boxplot_with_labels(tp.tag_length_list,
                                 'Testperson #' + str(tp.number),
                                 'Tag Length', current)
@@ -496,7 +479,8 @@ def calc_tag_length(tp_list):
     logging.debug("File written: %s" % (file_tag_length + '_summary'))
 
     # run global
-    global_fivenumbers = fivenum(global_array)
+    global_stats = [display(mean(global_array)),
+                    display(std(global_array))] + fivenum(global_array)
     with open((file_tag_length + '_global' + ext), 'wb') as f:
         writer = csv.writer(f)
         writer.writerow(['Avg. Tag Length',
@@ -506,13 +490,7 @@ def calc_tag_length(tp_list):
                          'Median',
                          'Third Quartille',
                          'Maximum'])
-        writer.writerow([display(mean(global_array)),
-                         display(std(global_array)),
-                         display(global_fivenumbers.get('min')),
-                         display(global_fivenumbers.get('q1')),
-                         display(global_fivenumbers.get('med')),
-                         display(global_fivenumbers.get('q3')),
-                         display(global_fivenumbers.get('max'))])
+        writer.writerow(global_stats)
     logging.debug('File written: %s' % (file_tag_length + '_global'))
     boxplot_with_labels(global_array, 'All Testpersons', 'Tag Length',
                         file_tag_length + '_global')
